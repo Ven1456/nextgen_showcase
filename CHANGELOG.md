@@ -1,3 +1,7 @@
+## 0.1.2
+- Chore: Added Config File 
+- Docs: update README Github Links 
+
 ## 0.1.1
 - Fix: resolve pubspec `screenshots` path error by declaring `assets/`
 - Chore: add `assets/placeholder.svg` dummy image
