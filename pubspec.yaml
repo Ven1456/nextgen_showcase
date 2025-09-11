@@ -1,8 +1,14 @@
 name: nextgen_showcase
-description: "Modern Flutter showcase/tour widget adopting latest UI trends."
+description: "Guided product tours and spotlight walkthroughs for Flutter (mobile, web, desktop)."
 repository: https://github.com/your-org/nextgen_showcase
 issue_tracker: https://github.com/your-org/nextgen_showcase/issues
 homepage: https://github.com/your-org/nextgen_showcase
+topics:
+  - onboarding
+  - walkthrough
+  - showcase
+  - tutorial
+  - spotlight
 
 
 # The following defines the version and build number for your application.
@@ -17,7 +23,7 @@ homepage: https://github.com/your-org/nextgen_showcase
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 0.1.0
 
 environment:
   sdk: ^3.3.0
@@ -37,6 +43,18 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
+screenshots:
+  - description: Demo of spotlight around target widget
+    path: assets/demo.png
+
+platforms:
+  android:
+  ios:
+  web:
+  linux:
+  macos:
+  windows:
 
 flutter:
   # Intentionally minimal for a Flutter package
