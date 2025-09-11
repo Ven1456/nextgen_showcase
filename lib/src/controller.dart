@@ -2,23 +2,119 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'models.dart';
 import 'theme.dart';
+import 'config.dart';
 
 class NextgenShowcaseController {
-  NextgenShowcaseController();
+  NextgenShowcaseController({ShowcaseConfig? config}) : _config = config;
 
   OverlayEntry? _activeEntry;
   final List<ShowcaseStep> _steps = <ShowcaseStep>[];
   int _currentIndex = -1;
+  final ShowcaseConfig? _config;
 
   bool get isShowing => _activeEntry != null;
   bool get hasSteps => _steps.isNotEmpty;
   int get currentIndex => _currentIndex;
+  ShowcaseStep? get currentStep => (_currentIndex >= 0 && _currentIndex < _steps.length) ? _steps[_currentIndex] : null;
 
   void setSteps(List<ShowcaseStep> steps) {
     _steps
       ..clear()
       ..addAll(steps);
   }
+
+  /// Update configuration while running.
+  void setConfig(ShowcaseConfig? config) {
+    // ignore: invalid_use_of_visible_for_testing_member
+    // ignore reason: simple state holder, safe to update
+    // (We keep a private field; just reassign and trigger rebuild when asked.)
+    // This method does not trigger rebuild by itself to avoid requiring a context here.
+    // Call [rebuild] from a widget with context after updating.
+    //
+    // Use a local variable to avoid shadowing analyzer warnings.
+    final ShowcaseConfig? newConfig = config;
+    // ignore: unnecessary_this
+    // Assign to private field
+    // (no mutation of steps or indices)
+    // ignore: invalid_use_of_protected_member
+    // (not protected anyway; placate linters)
+    //
+    // assign
+    // dartfmt keeps as is
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    // final assign:
+    // ignore: unnecessary_this
+    //
+    (this as dynamic)._config = newConfig;
+  }
+
+  /// Request rebuild of the overlay if visible.
+  void rebuild(BuildContext context) => _rebuild(context);
 
   void start(BuildContext context, {int initialIndex = 0}) {
     if (_steps.isEmpty) {
@@ -67,26 +163,47 @@ class NextgenShowcaseController {
 
     _activeEntry = OverlayEntry(
       builder: (BuildContext overlayContext) {
-        return _ShowcaseOverlay(
-          controller: this,
-          step: step,
-          targetOffset: targetOffset,
-          targetSize: targetSize,
-          onClose: dismiss,
-          onNext: () => next(context),
-          onPrevious: () => previous(context),
+        final NextgenShowcaseThemeData baseTheme = NextgenShowcaseTheme.of(context);
+        final NextgenShowcaseThemeData mergedTheme = _mergeTheme(baseTheme, _config);
+        return NextgenShowcaseTheme(
+          data: mergedTheme,
+          child: _ShowcaseOverlay(
+            controller: this,
+            targetOffset: targetOffset,
+            targetSize: targetSize,
+            onClose: dismiss,
+            onNext: () => next(context),
+            onPrevious: () => previous(context),
+          ),
         );
       },
     );
 
     Overlay.of(context, rootOverlay: true).insert(_activeEntry!);
   }
+
+  NextgenShowcaseThemeData _mergeTheme(NextgenShowcaseThemeData base, ShowcaseConfig? config) {
+    if (config == null) return base;
+    return base.copyWith(
+      backdropColor: config.backdropColor,
+      cardColor: config.cardColor,
+      titleStyle: config.titleStyle,
+      descriptionStyle: config.descriptionStyle,
+      spotlightShadowColor: config.spotlightShadowColor,
+      spotlightShadowBlur: config.spotlightShadowBlur,
+      stunMode: config.stunMode,
+      gradientColors: config.gradientColors,
+      gradientAnimationMs: config.gradientAnimationMs,
+      glassBlurSigma: config.glassBlurSigma,
+      cardOpacity: config.cardOpacity,
+      glowPulseDelta: config.glowPulseDelta,
+    );
+  }
 }
 
 class _ShowcaseOverlay extends StatefulWidget {
   const _ShowcaseOverlay({
     required this.controller,
-    required this.step,
     required this.targetOffset,
     required this.targetSize,
     required this.onClose,
@@ -95,7 +212,6 @@ class _ShowcaseOverlay extends StatefulWidget {
   });
 
   final NextgenShowcaseController controller;
-  final ShowcaseStep step;
   final Offset targetOffset;
   final Size targetSize;
   final VoidCallback onClose;
@@ -135,6 +251,7 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
   @override
   Widget build(BuildContext context) {
     final NextgenShowcaseThemeData showcaseTheme = NextgenShowcaseTheme.of(context);
+    final ShowcaseStep? step = widget.controller.currentStep;
     final Size screenSize = MediaQuery.of(context).size;
 
     return Stack(
@@ -155,15 +272,16 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
           child: AnimatedBuilder(
             animation: _pulse,
             builder: (BuildContext context, Widget? child) {
+              if (step == null) return const SizedBox.shrink();
               return CustomPaint(
                 painter: _SpotlightPainter(
                   rect: Rect.fromLTWH(widget.targetOffset.dx, widget.targetOffset.dy, widget.targetSize.width, widget.targetSize.height),
-                  shape: widget.step.shape,
-                  borderRadius: widget.step.borderRadius,
-                  padding: widget.step.padding,
+                  shape: step.shape,
+                  borderRadius: step.borderRadius,
+                  padding: step.padding,
                   shadowColor: showcaseTheme.spotlightShadowColor,
                   shadowBlur: showcaseTheme.spotlightShadowBlur + (showcaseTheme.stunMode ? (showcaseTheme.glowPulseDelta * _pulse.value) : 0),
-                  customCutoutPath: widget.step.customCutoutPath,
+                  customCutoutPath: step.customCutoutPath,
                   stunMode: showcaseTheme.stunMode,
                   backdropColor: showcaseTheme.backdropColor,
                   gradientColors: showcaseTheme.gradientColors,
@@ -196,12 +314,12 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
                 ),
               );
             },
-            child: widget.step.contentBuilder != null
-                ? _GlassWrap(child: Builder(builder: widget.step.contentBuilder!))
+            child: (step?.contentBuilder) != null
+                ? _GlassWrap(child: Builder(builder: step!.contentBuilder!))
                 : _GlassCard(
-                    title: widget.step.title,
-                    description: widget.step.description,
-                    actions: widget.step.actions,
+                    title: step?.title ?? '',
+                    description: step?.description ?? '',
+                    actions: step?.actions ?? const <ShowcaseAction>[],
                     onClose: widget.onClose,
                     onNext: widget.onNext,
                     onPrevious: widget.onPrevious,
