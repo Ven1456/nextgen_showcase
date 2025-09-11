@@ -134,7 +134,6 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final NextgenShowcaseThemeData showcaseTheme = NextgenShowcaseTheme.of(context);
     final Size screenSize = MediaQuery.of(context).size;
 

@@ -46,7 +46,7 @@ dev_dependencies:
 
 screenshots:
   - description: Demo of spotlight around target widget
-    path: assets/demo.png
+#    path: assets/demo.png
 
 platforms:
   android:
