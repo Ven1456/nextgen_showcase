@@ -3,8 +3,9 @@
 A modern, lightweight Flutter package to create guided product tours and spotlight walkthroughs in minutes.
 
 [![Pub Version](https://img.shields.io/pub/v/nextgen_showcase.svg)](https://pub.dev/packages/nextgen_showcase)
-[![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=main)](https://github.com/your-org/nextgen_showcase/actions)
-[![codecov](https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg)](https://app.codecov.io/gh/your-org/nextgen_showcase)
+[![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=main)](https://github.com/Ven1456/nextgen_showcase.git)
+
+[//]: # ([![codecov]&#40;https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg&#41;]&#40;https://app.codecov.io/gh/your-org/nextgen_showcase&#41;)
 
 [//]: # (### Demo)
 
