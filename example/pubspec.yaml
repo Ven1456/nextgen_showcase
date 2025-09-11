@@ -1,0 +1,22 @@
+name: nextgen_showcase_example
+description: Example app for nextgen_showcase
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.3.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  nextgen_showcase:
+    path: ..
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+
