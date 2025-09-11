@@ -44,9 +44,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
-screenshots:
-  - description: Demo of spotlight around target widget
-#    path: assets/demo.png
+screenshots: []
 
 platforms:
   android:
@@ -58,3 +56,5 @@ platforms:
 
 flutter:
   # Intentionally minimal for a Flutter package
+  assets:
+    - assets/
