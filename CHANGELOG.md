@@ -1,3 +1,8 @@
+## 0.1.1
+- Fix: resolve pubspec `screenshots` path error by declaring `assets/`
+- Chore: add `assets/placeholder.svg` dummy image
+- Docs: update README headings and examples
+
 ## 0.1.0
 - Initial release with controller-driven overlay and focus ring
 
