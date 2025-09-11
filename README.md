@@ -6,9 +6,10 @@ A modern, lightweight Flutter package to create guided product tours and spotlig
 [![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=main)](https://github.com/your-org/nextgen_showcase/actions)
 [![codecov](https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg)](https://app.codecov.io/gh/your-org/nextgen_showcase)
 
-### Demo
+[//]: # (### Demo)
 
-https://github.com/your-org/nextgen_showcase/assets/demo.gif
+[//]: # ()
+[//]: # (https://github.com/your-org/nextgen_showcase/assets/demo.gif)
 
 - Add a short GIF or link a YouTube demo above. Replace the placeholder with your assets.
 
