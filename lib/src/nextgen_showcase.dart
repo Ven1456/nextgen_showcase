@@ -63,24 +63,24 @@ class NextgenShowcase extends StatefulWidget {
 
   /// The controller that manages the showcase state and navigation.
   final NextgenShowcaseController controller;
-  
+
   /// The list of showcase steps to be displayed.
   final List<ShowcaseStep> steps;
-  
+
   /// Optional configuration for customizing the showcase appearance.
   final ShowcaseConfig? config;
-  
+
   /// Whether the showcase should start automatically when the widget is built.
   ///
   /// Defaults to `true`. When `false`, you need to manually call
   /// [NextgenShowcaseController.start] to begin the showcase.
   final bool autoStart;
-  
+
   /// The index of the step to start with.
   ///
   /// Defaults to `0` (first step). Must be within the bounds of [steps].
   final int initialIndex;
-  
+
   /// The child widget that contains the UI elements to be showcased.
   final Widget child;
 
@@ -122,7 +122,9 @@ class _NextgenShowcaseState extends State<NextgenShowcase> {
         key: s.key,
         title: s.title,
         description: s.description,
-        shape: (c.defaultShape is ShowcaseShape ? c.defaultShape as ShowcaseShape : s.shape),
+        shape: (c.defaultShape is ShowcaseShape
+            ? c.defaultShape as ShowcaseShape
+            : s.shape),
         borderRadius: c.defaultBorderRadius ?? s.borderRadius,
         actions: s.actions,
         padding: c.defaultPadding ?? s.padding,
@@ -142,7 +144,8 @@ class _NextgenShowcaseState extends State<NextgenShowcase> {
     );
   }
 
-  NextgenShowcaseThemeData _mergeTheme(NextgenShowcaseThemeData base, ShowcaseConfig? config) {
+  NextgenShowcaseThemeData _mergeTheme(
+      NextgenShowcaseThemeData base, ShowcaseConfig? config) {
     if (config == null) return base;
     return base.copyWith(
       backdropColor: config.backdropColor,
@@ -160,5 +163,3 @@ class _NextgenShowcaseState extends State<NextgenShowcase> {
     );
   }
 }
-
-

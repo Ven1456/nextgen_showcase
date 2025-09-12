@@ -8,10 +8,8 @@
 /// existing UI and provides the showcase functionality.
 library nextgen_showcase;
 
+export 'src/config.dart';
 export 'src/controller.dart';
+export 'src/models.dart';
 export 'src/nextgen_showcase.dart';
 export 'src/theme.dart';
-export 'src/models.dart';
-export 'src/config.dart';
-
-

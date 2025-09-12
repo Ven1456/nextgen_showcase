@@ -20,12 +20,14 @@ class NextgenShowcaseTheme extends InheritedWidget {
   /// Returns the showcase theme data from the nearest [NextgenShowcaseTheme]
   /// ancestor, or the default theme if none is found.
   static NextgenShowcaseThemeData of(BuildContext context) {
-    final NextgenShowcaseTheme? theme = context.dependOnInheritedWidgetOfExactType<NextgenShowcaseTheme>();
+    final NextgenShowcaseTheme? theme =
+        context.dependOnInheritedWidgetOfExactType<NextgenShowcaseTheme>();
     return theme?.data ?? const NextgenShowcaseThemeData();
   }
 
   @override
-  bool updateShouldNotify(covariant NextgenShowcaseTheme oldWidget) => data != oldWidget.data;
+  bool updateShouldNotify(covariant NextgenShowcaseTheme oldWidget) =>
+      data != oldWidget.data;
 }
 
 /// Theme data for showcase widgets.
@@ -44,7 +46,11 @@ class NextgenShowcaseThemeData {
     this.spotlightShadowColor = const Color(0x80000000),
     this.spotlightShadowBlur = 24,
     this.stunMode = false,
-    this.gradientColors = const <Color>[Color(0xFF00E5FF), Color(0xFF7C4DFF), Color(0xFFFF4081)],
+    this.gradientColors = const <Color>[
+      Color(0xFF00E5FF),
+      Color(0xFF7C4DFF),
+      Color(0xFFFF4081)
+    ],
     this.gradientAnimationMs = 4000,
     this.glassBlurSigma = 12,
     this.cardOpacity = 0.85,
@@ -53,37 +59,37 @@ class NextgenShowcaseThemeData {
 
   /// The color of the backdrop overlay.
   final Color backdropColor;
-  
+
   /// The background color of the showcase card.
   final Color? cardColor;
-  
+
   /// The text style for step titles.
   final TextStyle? titleStyle;
-  
+
   /// The text style for step descriptions.
   final TextStyle? descriptionStyle;
-  
+
   /// The color of the spotlight shadow/glow effect.
   final Color spotlightShadowColor;
-  
+
   /// The blur radius of the spotlight shadow/glow effect.
   final double spotlightShadowBlur;
-  
+
   /// Whether to enable "stun mode" with glass morphism and gradient effects.
   final bool stunMode;
-  
+
   /// Colors for the animated gradient effect in stun mode.
   final List<Color> gradientColors;
-  
+
   /// Duration of the gradient animation in milliseconds.
   final int gradientAnimationMs;
-  
+
   /// Blur sigma for the glass morphism effect.
   final double glassBlurSigma;
-  
+
   /// Opacity of the showcase card in stun mode.
   final double cardOpacity;
-  
+
   /// Delta value for the glow pulse animation.
   final double glowPulseDelta;
 
@@ -120,5 +126,3 @@ class NextgenShowcaseThemeData {
     );
   }
 }
-
-

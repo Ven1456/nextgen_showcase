@@ -12,13 +12,13 @@ import 'config.dart';
 /// Example usage:
 /// ```dart
 /// final controller = NextgenShowcaseController();
-/// 
+///
 /// // Start the showcase
 /// controller.start(context);
-/// 
+///
 /// // Navigate to next step
 /// controller.next(context);
-/// 
+///
 /// // Dismiss the showcase
 /// controller.dismiss();
 /// ```
@@ -36,20 +36,23 @@ class NextgenShowcaseController {
 
   /// Whether the showcase is currently being displayed.
   bool get isShowing => _activeEntry != null;
-  
+
   /// Whether there are any steps available for showcasing.
   bool get hasSteps => _steps.isNotEmpty;
-  
+
   /// The current step index (0-based).
   ///
   /// Returns -1 if no showcase is active.
   int get currentIndex => _currentIndex;
-  
+
   /// The current showcase step being displayed.
   ///
   /// Returns `null` if no showcase is active or if the current index
   /// is out of bounds.
-  ShowcaseStep? get currentStep => (_currentIndex >= 0 && _currentIndex < _steps.length) ? _steps[_currentIndex] : null;
+  ShowcaseStep? get currentStep =>
+      (_currentIndex >= 0 && _currentIndex < _steps.length)
+          ? _steps[_currentIndex]
+          : null;
 
   /// Sets the list of showcase steps.
   ///
@@ -141,8 +144,10 @@ class NextgenShowcaseController {
 
     _activeEntry = OverlayEntry(
       builder: (BuildContext overlayContext) {
-        final NextgenShowcaseThemeData baseTheme = NextgenShowcaseTheme.of(context);
-        final NextgenShowcaseThemeData mergedTheme = _mergeTheme(baseTheme, _config);
+        final NextgenShowcaseThemeData baseTheme =
+            NextgenShowcaseTheme.of(context);
+        final NextgenShowcaseThemeData mergedTheme =
+            _mergeTheme(baseTheme, _config);
         return NextgenShowcaseTheme(
           data: mergedTheme,
           child: _ShowcaseOverlay(
@@ -160,7 +165,8 @@ class NextgenShowcaseController {
     Overlay.of(context, rootOverlay: true).insert(_activeEntry!);
   }
 
-  NextgenShowcaseThemeData _mergeTheme(NextgenShowcaseThemeData base, ShowcaseConfig? config) {
+  NextgenShowcaseThemeData _mergeTheme(
+      NextgenShowcaseThemeData base, ShowcaseConfig? config) {
     if (config == null) return base;
     return base.copyWith(
       backdropColor: config.backdropColor,
@@ -208,7 +214,8 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
   @override
   void initState() {
     super.initState();
-    _anim = AnimationController(vsync: this, duration: const Duration(milliseconds: 4000))
+    _anim = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 4000))
       ..repeat(reverse: true);
     _pulse = CurvedAnimation(parent: _anim, curve: Curves.easeInOut);
   }
@@ -228,7 +235,8 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final NextgenShowcaseThemeData showcaseTheme = NextgenShowcaseTheme.of(context);
+    final NextgenShowcaseThemeData showcaseTheme =
+        NextgenShowcaseTheme.of(context);
     final ShowcaseStep? step = widget.controller.currentStep;
     final Size screenSize = MediaQuery.of(context).size;
 
@@ -253,12 +261,19 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
               if (step == null) return const SizedBox.shrink();
               return CustomPaint(
                 painter: _SpotlightPainter(
-                  rect: Rect.fromLTWH(widget.targetOffset.dx, widget.targetOffset.dy, widget.targetSize.width, widget.targetSize.height),
+                  rect: Rect.fromLTWH(
+                      widget.targetOffset.dx,
+                      widget.targetOffset.dy,
+                      widget.targetSize.width,
+                      widget.targetSize.height),
                   shape: step.shape,
                   borderRadius: step.borderRadius,
                   padding: step.padding,
                   shadowColor: showcaseTheme.spotlightShadowColor,
-                  shadowBlur: showcaseTheme.spotlightShadowBlur + (showcaseTheme.stunMode ? (showcaseTheme.glowPulseDelta * _pulse.value) : 0),
+                  shadowBlur: showcaseTheme.spotlightShadowBlur +
+                      (showcaseTheme.stunMode
+                          ? (showcaseTheme.glowPulseDelta * _pulse.value)
+                          : 0),
                   customCutoutPath: step.customCutoutPath,
                   stunMode: showcaseTheme.stunMode,
                   backdropColor: showcaseTheme.backdropColor,
@@ -332,7 +347,8 @@ class _GlassCard extends StatelessWidget {
     final NextgenShowcaseThemeData t = NextgenShowcaseTheme.of(context);
     final bool glass = t.stunMode;
     final Color baseColor = (t.cardColor) ?? theme.colorScheme.surface;
-    final Color cardColor = glass ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
+    final Color cardColor =
+        glass ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
     final BorderRadius radius = BorderRadius.circular(16);
 
     Widget content = Container(
@@ -398,7 +414,8 @@ class _GlassCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: radius,
         child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: t.glassBlurSigma, sigmaY: t.glassBlurSigma),
+          filter: ui.ImageFilter.blur(
+              sigmaX: t.glassBlurSigma, sigmaY: t.glassBlurSigma),
           child: content,
         ),
       ),
@@ -416,7 +433,8 @@ class _GlassWrap extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final BorderRadius radius = BorderRadius.circular(16);
     final Color baseColor = (t.cardColor) ?? theme.colorScheme.surface;
-    final Color cardColor = t.stunMode ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
+    final Color cardColor =
+        t.stunMode ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
     Widget content = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -429,7 +447,8 @@ class _GlassWrap extends StatelessWidget {
             offset: const Offset(0, 12),
           ),
         ],
-        border: t.stunMode ? Border.all(color: Colors.white.withAlpha(20)) : null,
+        border:
+            t.stunMode ? Border.all(color: Colors.white.withAlpha(20)) : null,
       ),
       child: child,
     );
@@ -439,7 +458,8 @@ class _GlassWrap extends StatelessWidget {
       child: ClipRRect(
         borderRadius: radius,
         child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: t.glassBlurSigma, sigmaY: t.glassBlurSigma),
+          filter: ui.ImageFilter.blur(
+              sigmaX: t.glassBlurSigma, sigmaY: t.glassBlurSigma),
           child: content,
         ),
       ),
@@ -494,7 +514,8 @@ class _SpotlightPainter extends CustomPainter {
         shapePath.addRect(padded);
         break;
       case ShowcaseShape.circle:
-        shapePath.addOval(Rect.fromCircle(center: padded.center, radius: padded.longestSide / 2));
+        shapePath.addOval(Rect.fromCircle(
+            center: padded.center, radius: padded.longestSide / 2));
         break;
       case ShowcaseShape.roundedRectangle:
         shapePath.addRRect(RRect.fromRectAndCorners(
@@ -509,7 +530,8 @@ class _SpotlightPainter extends CustomPainter {
         shapePath.addOval(padded);
         break;
       case ShowcaseShape.stadium:
-        shapePath.addRRect(RRect.fromRectAndRadius(padded, Radius.circular(padded.shortestSide / 2)));
+        shapePath.addRRect(RRect.fromRectAndRadius(
+            padded, Radius.circular(padded.shortestSide / 2)));
         break;
       case ShowcaseShape.diamond:
         final Path diamond = Path()
@@ -575,5 +597,3 @@ class _SpotlightPainter extends CustomPainter {
         shadowBlur != oldDelegate.shadowBlur;
   }
 }
-
-

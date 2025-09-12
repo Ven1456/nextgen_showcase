@@ -8,21 +8,27 @@ typedef ShowcaseActionCallback = void Function();
 typedef ShowcaseContentBuilder = Widget Function(BuildContext context);
 
 /// Available shapes for the spotlight effect.
-enum ShowcaseShape { 
+enum ShowcaseShape {
   /// Rectangular spotlight with sharp corners.
-  rectangle, 
+  rectangle,
+
   /// Rectangular spotlight with rounded corners.
-  roundedRectangle, 
+  roundedRectangle,
+
   /// Circular spotlight.
-  circle, 
+  circle,
+
   /// Oval spotlight.
-  oval, 
+  oval,
+
   /// Stadium-shaped spotlight (pill shape).
-  stadium, 
+  stadium,
+
   /// Diamond-shaped spotlight.
-  diamond, 
+  diamond,
+
   /// Custom shape defined by a path.
-  custom 
+  custom
 }
 
 /// Represents an action button in a showcase step.
@@ -35,10 +41,10 @@ class ShowcaseAction {
   /// The [label] parameter is required and represents the button text.
   /// The [onPressed] callback is optional and defines the action to perform.
   const ShowcaseAction({required this.label, this.onPressed});
-  
+
   /// The text label displayed on the action button.
   final String label;
-  
+
   /// The callback function to execute when the action is pressed.
   final ShowcaseActionCallback? onPressed;
 }
@@ -66,33 +72,31 @@ class ShowcaseStep {
 
   /// The global key attached to the target widget.
   final GlobalKey key;
-  
+
   /// The title displayed in the showcase card.
   final String title;
-  
+
   /// The description text displayed in the showcase card.
   final String description;
-  
+
   /// The shape of the spotlight effect.
   final ShowcaseShape shape;
-  
+
   /// The border radius for rounded shapes.
   final BorderRadius borderRadius;
-  
+
   /// List of action buttons for this step.
   final List<ShowcaseAction> actions;
-  
+
   /// Padding around the spotlight area.
   final EdgeInsets padding;
-  
+
   /// Optional custom content builder for the showcase card.
   ///
   /// If provided, this will be used instead of the default card
   /// with title and description.
   final ShowcaseContentBuilder? contentBuilder;
-  
+
   /// Custom path for the spotlight cutout when using [ShowcaseShape.custom].
   final ui.Path? customCutoutPath;
 }
-
-

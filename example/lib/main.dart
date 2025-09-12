@@ -42,8 +42,10 @@ class _ShowcaseExampleAppState extends State<ShowcaseExampleApp> {
           onToggleThemeMode: _toggleThemeMode,
           themeData: _themeData,
           onUpdateTheme: _updateTheme,
-          onEnableStunMode: () => _updateTheme(_themeData.copyWith(stunMode: true)),
-          onDisableStunMode: () => _updateTheme(_themeData.copyWith(stunMode: false)),
+          onEnableStunMode: () =>
+              _updateTheme(_themeData.copyWith(stunMode: true)),
+          onDisableStunMode: () =>
+              _updateTheme(_themeData.copyWith(stunMode: false)),
         ),
       ),
     );
@@ -88,7 +90,8 @@ class _ShowcaseHomeState extends State<ShowcaseHome> {
         isDark: widget.themeMode == ThemeMode.dark,
         onToggleDark: widget.onToggleThemeMode,
         stunEnabled: widget.themeData.stunMode,
-        onToggleStun: (bool v) => v ? widget.onEnableStunMode() : widget.onDisableStunMode(),
+        onToggleStun: (bool v) =>
+            v ? widget.onEnableStunMode() : widget.onDisableStunMode(),
       ),
       const _EdgeCasesPage(),
     ];
@@ -102,11 +105,26 @@ class _ShowcaseHomeState extends State<ShowcaseHome> {
         selectedIndex: _index,
         onDestinationSelected: (int i) => setState(() => _index = i),
         destinations: const <NavigationDestination>[
-          NavigationDestination(icon: Icon(Icons.play_arrow_outlined), selectedIcon: Icon(Icons.play_arrow), label: 'Basic'),
-          NavigationDestination(icon: Icon(Icons.star_border), selectedIcon: Icon(Icons.star), label: 'Advanced'),
-          NavigationDestination(icon: Icon(Icons.tune), selectedIcon: Icon(Icons.tune), label: 'Playground'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
-          NavigationDestination(icon: Icon(Icons.report_gmailerrorred_outlined), selectedIcon: Icon(Icons.report), label: 'Edge cases'),
+          NavigationDestination(
+              icon: Icon(Icons.play_arrow_outlined),
+              selectedIcon: Icon(Icons.play_arrow),
+              label: 'Basic'),
+          NavigationDestination(
+              icon: Icon(Icons.star_border),
+              selectedIcon: Icon(Icons.star),
+              label: 'Advanced'),
+          NavigationDestination(
+              icon: Icon(Icons.tune),
+              selectedIcon: Icon(Icons.tune),
+              label: 'Playground'),
+          NavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings),
+              label: 'Settings'),
+          NavigationDestination(
+              icon: Icon(Icons.report_gmailerrorred_outlined),
+              selectedIcon: Icon(Icons.report),
+              label: 'Edge cases'),
         ],
       ),
     );
@@ -179,13 +197,15 @@ class _EdgeCasesPageState extends State<_EdgeCasesPage> {
       ShowcaseStep(
         key: _unmountedKey, // Intentionally not mounted
         title: 'Missing/moved target',
-        description: 'The controller safely does nothing if the key is not found.',
+        description:
+            'The controller safely does nothing if the key is not found.',
       ),
     ]);
     _controller.start(context);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No crash: missing key handled gracefully')),
+        const SnackBar(
+            content: Text('No crash: missing key handled gracefully')),
       );
     }
   }
@@ -200,7 +220,8 @@ class _EdgeCasesPageState extends State<_EdgeCasesPage> {
       ShowcaseStep(
         key: _farKey,
         title: 'Offscreen target',
-        description: 'This button was scrolled into view before starting the tour.',
+        description:
+            'This button was scrolled into view before starting the tour.',
       ),
     ]);
     _controller.start(context);
@@ -313,7 +334,9 @@ class _AdvancedExamplePageState extends State<_AdvancedExamplePage> {
                   children: <Widget>[
                     Row(
                       children: const <Widget>[
-                        CircleAvatar(radius: 18, backgroundImage: AssetImage('assets/demo.png')),
+                        CircleAvatar(
+                            radius: 18,
+                            backgroundImage: AssetImage('assets/demo.png')),
                         SizedBox(width: 12),
                         Text('Rich content card'),
                       ],
@@ -323,9 +346,11 @@ class _AdvancedExamplePageState extends State<_AdvancedExamplePage> {
                     const SizedBox(height: 12),
                     Row(
                       children: <Widget>[
-                        FilledButton.tonal(onPressed: () {}, child: const Text('Open link')),
+                        FilledButton.tonal(
+                            onPressed: () {}, child: const Text('Open link')),
                         const SizedBox(width: 8),
-                        FilledButton(onPressed: () {}, child: const Text('CTA')),
+                        FilledButton(
+                            onPressed: () {}, child: const Text('CTA')),
                       ],
                     )
                   ],
@@ -368,7 +393,8 @@ class _PlaygroundPageState extends State<_PlaygroundPage> {
   void _applyTheme() {
     widget.onChanged(
       widget.data.copyWith(
-        backdropColor: Color(((_backdropOpacity * 255).round() << 24) | 0x000000),
+        backdropColor:
+            Color(((_backdropOpacity * 255).round() << 24) | 0x000000),
         spotlightShadowBlur: _shadow,
       ),
     );
@@ -386,7 +412,8 @@ class _PlaygroundPageState extends State<_PlaygroundPage> {
     ]);
     if (_controller.isShowing) {
       _controller.dismiss();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _controller.start(context));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _controller.start(context));
     } else {
       _controller.start(context);
     }
@@ -406,7 +433,8 @@ class _PlaygroundPageState extends State<_PlaygroundPage> {
                 child: const Text('Start demo'),
               ),
               const SizedBox(width: 12),
-              TextButton(onPressed: _controller.dismiss, child: const Text('Dismiss')),
+              TextButton(
+                  onPressed: _controller.dismiss, child: const Text('Dismiss')),
             ],
           ),
           const SizedBox(height: 16),
@@ -422,12 +450,19 @@ class _PlaygroundPageState extends State<_PlaygroundPage> {
                   if (_controller.isShowing) _startDemo();
                 },
                 items: const <DropdownMenuItem<ShowcaseShape>>[
-                  DropdownMenuItem(value: ShowcaseShape.rectangle, child: Text('Rectangle')),
-                  DropdownMenuItem(value: ShowcaseShape.roundedRectangle, child: Text('Rounded rectangle')),
-                  DropdownMenuItem(value: ShowcaseShape.circle, child: Text('Circle')),
-                  DropdownMenuItem(value: ShowcaseShape.oval, child: Text('Oval')),
-                  DropdownMenuItem(value: ShowcaseShape.stadium, child: Text('Stadium')),
-                  DropdownMenuItem(value: ShowcaseShape.diamond, child: Text('Diamond')),
+                  DropdownMenuItem(
+                      value: ShowcaseShape.rectangle, child: Text('Rectangle')),
+                  DropdownMenuItem(
+                      value: ShowcaseShape.roundedRectangle,
+                      child: Text('Rounded rectangle')),
+                  DropdownMenuItem(
+                      value: ShowcaseShape.circle, child: Text('Circle')),
+                  DropdownMenuItem(
+                      value: ShowcaseShape.oval, child: Text('Oval')),
+                  DropdownMenuItem(
+                      value: ShowcaseShape.stadium, child: Text('Stadium')),
+                  DropdownMenuItem(
+                      value: ShowcaseShape.diamond, child: Text('Diamond')),
                 ],
               ),
               SizedBox(
@@ -478,7 +513,8 @@ class _PlaygroundPageState extends State<_PlaygroundPage> {
                       max: 1.0,
                       divisions: 20,
                       label: _backdropOpacity.toStringAsFixed(2),
-                      onChanged: (double v) => setState(() => _backdropOpacity = v),
+                      onChanged: (double v) =>
+                          setState(() => _backdropOpacity = v),
                       onChangeEnd: (_) => _applyTheme(),
                     ),
                   ],
@@ -529,10 +565,10 @@ class _SettingsPage extends StatelessWidget {
         ),
         const ListTile(
           title: Text('About'),
-          subtitle: Text('This example showcases multiple use cases and a live playground.'),
+          subtitle: Text(
+              'This example showcases multiple use cases and a live playground.'),
         ),
       ],
     );
   }
 }
-
