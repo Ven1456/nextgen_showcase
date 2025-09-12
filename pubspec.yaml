@@ -1,6 +1,6 @@
 name: nextgen_showcase
 description: "Guided product tours and spotlight walkthroughs for Flutter (mobile, web, desktop)."
-repository: https://github.com/Ven1456/nextgen_showcase/blob/master/example/lib/main.dart
+repository: https://github.com/Ven1456/nextgen_showcase.git
 issue_tracker: https://github.com/Ven1456/nextgen_showcase/blob/master/example/lib/main.dart
 homepage: https://github.com/Ven1456/nextgen_showcase/blob/master/example/lib/main.dart
 topics:
@@ -23,7 +23,7 @@ topics:
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.1.4
+version: 0.1.5
 
 environment:
   sdk: ^3.3.0

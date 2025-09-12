@@ -342,12 +342,12 @@ class _GlassCard extends StatelessWidget {
         borderRadius: radius,
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withAlpha(25),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
         ],
-        border: glass ? Border.all(color: Colors.white.withOpacity(0.2)) : null,
+        border: glass ? Border.all(color: Colors.white.withAlpha(20)) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,7 +429,7 @@ class _GlassWrap extends StatelessWidget {
             offset: const Offset(0, 12),
           ),
         ],
-        border: t.stunMode ? Border.all(color: Colors.white.withOpacity(0.2)) : null,
+        border: t.stunMode ? Border.all(color: Colors.white.withAlpha(20)) : null,
       ),
       child: child,
     );

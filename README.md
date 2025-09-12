@@ -26,7 +26,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nextgen_showcase: ^0.1.4
+  nextgen_showcase: ^0.1.5
 ```
 
 Then run:
