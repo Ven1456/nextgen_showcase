@@ -20,12 +20,20 @@ class NextgenShowcaseTheme extends InheritedWidget {
   /// Returns the showcase theme data from the nearest [NextgenShowcaseTheme]
   /// ancestor, or the default theme if none is found.
   static NextgenShowcaseThemeData of(BuildContext context) {
-    final NextgenShowcaseTheme? theme = context.dependOnInheritedWidgetOfExactType<NextgenShowcaseTheme>();
+    final NextgenShowcaseTheme? theme =
+        context.dependOnInheritedWidgetOfExactType<NextgenShowcaseTheme>();
     return theme?.data ?? const NextgenShowcaseThemeData();
   }
 
+  /// Returns a theme data resolved against the current Material [Theme] (e.g., brightness).
+  static NextgenShowcaseThemeData resolved(BuildContext context) {
+    final NextgenShowcaseThemeData base = of(context);
+    return base.resolvedFor(context);
+  }
+
   @override
-  bool updateShouldNotify(covariant NextgenShowcaseTheme oldWidget) => data != oldWidget.data;
+  bool updateShouldNotify(covariant NextgenShowcaseTheme oldWidget) =>
+      data != oldWidget.data;
 }
 
 /// Theme data for showcase widgets.
@@ -44,7 +52,11 @@ class NextgenShowcaseThemeData {
     this.spotlightShadowColor = const Color(0x80000000),
     this.spotlightShadowBlur = 24,
     this.stunMode = false,
-    this.gradientColors = const <Color>[Color(0xFF00E5FF), Color(0xFF7C4DFF), Color(0xFFFF4081)],
+    this.gradientColors = const <Color>[
+      Color(0xFF00E5FF),
+      Color(0xFF7C4DFF),
+      Color(0xFFFF4081)
+    ],
     this.gradientAnimationMs = 4000,
     this.glassBlurSigma = 12,
     this.cardOpacity = 0.85,
@@ -53,37 +65,37 @@ class NextgenShowcaseThemeData {
 
   /// The color of the backdrop overlay.
   final Color backdropColor;
-  
+
   /// The background color of the showcase card.
   final Color? cardColor;
-  
+
   /// The text style for step titles.
   final TextStyle? titleStyle;
-  
+
   /// The text style for step descriptions.
   final TextStyle? descriptionStyle;
-  
+
   /// The color of the spotlight shadow/glow effect.
   final Color spotlightShadowColor;
-  
+
   /// The blur radius of the spotlight shadow/glow effect.
   final double spotlightShadowBlur;
-  
+
   /// Whether to enable "stun mode" with glass morphism and gradient effects.
   final bool stunMode;
-  
+
   /// Colors for the animated gradient effect in stun mode.
   final List<Color> gradientColors;
-  
+
   /// Duration of the gradient animation in milliseconds.
   final int gradientAnimationMs;
-  
+
   /// Blur sigma for the glass morphism effect.
   final double glassBlurSigma;
-  
+
   /// Opacity of the showcase card in stun mode.
   final double cardOpacity;
-  
+
   /// Delta value for the glow pulse animation.
   final double glowPulseDelta;
 
@@ -119,6 +131,25 @@ class NextgenShowcaseThemeData {
       glowPulseDelta: glowPulseDelta ?? this.glowPulseDelta,
     );
   }
+
+  /// Create a derived theme using ambient Material theme defaults.
+  NextgenShowcaseThemeData resolvedFor(BuildContext context) {
+    final ThemeData material = Theme.of(context);
+    final bool isDark = material.brightness == Brightness.dark;
+    final Color resolvedCard = cardColor ?? material.colorScheme.surface;
+    final List<Color> resolvedGradient = gradientColors.isNotEmpty
+        ? gradientColors
+        : (isDark
+            ? <Color>[const Color(0xFF263238), const Color(0xFF000000)]
+            : <Color>[const Color(0xFFE0F7FA), const Color(0xFFEDE7F6)]);
+    final Color resolvedBackdrop = isDark
+        ? backdropColor
+        : backdropColor.withAlpha(170); // slightly lighter for light mode
+
+    return copyWith(
+      cardColor: resolvedCard,
+      gradientColors: resolvedGradient,
+      backdropColor: resolvedBackdrop,
+    );
+  }
 }
-
-

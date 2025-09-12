@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nextgen_showcase/nextgen_showcase.dart';
 
 void main() {
-  testWidgets('controller shows and hides overlay', (WidgetTester tester) async {
+  testWidgets('controller shows and hides overlay',
+      (WidgetTester tester) async {
     final GlobalKey buttonKey = GlobalKey();
     final NextgenShowcaseController controller = NextgenShowcaseController();
 
@@ -11,7 +12,8 @@ void main() {
       MaterialApp(
         home: Scaffold(
           body: Center(
-            child: ElevatedButton(key: buttonKey, onPressed: () {}, child: const Text('Tap')),
+            child: ElevatedButton(
+                key: buttonKey, onPressed: () {}, child: const Text('Tap')),
           ),
         ),
       ),
@@ -33,5 +35,3 @@ void main() {
     expect(find.text('Title'), findsNothing);
   });
 }
-
-
