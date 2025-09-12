@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 
+/// An inherited widget that provides theme data for showcase widgets.
+///
+/// This widget makes theme data available to all showcase widgets in the
+/// widget tree below it.
 class NextgenShowcaseTheme extends InheritedWidget {
+  /// Creates a showcase theme widget.
+  ///
+  /// The [data] and [child] parameters are required.
   const NextgenShowcaseTheme({
     super.key,
     required this.data,
     required super.child,
   });
 
+  /// The theme data for showcase widgets.
   final NextgenShowcaseThemeData data;
 
+  /// Returns the showcase theme data from the nearest [NextgenShowcaseTheme]
+  /// ancestor, or the default theme if none is found.
   static NextgenShowcaseThemeData of(BuildContext context) {
     final NextgenShowcaseTheme? theme = context.dependOnInheritedWidgetOfExactType<NextgenShowcaseTheme>();
     return theme?.data ?? const NextgenShowcaseThemeData();
@@ -18,7 +28,14 @@ class NextgenShowcaseTheme extends InheritedWidget {
   bool updateShouldNotify(covariant NextgenShowcaseTheme oldWidget) => data != oldWidget.data;
 }
 
+/// Theme data for showcase widgets.
+///
+/// This class defines the visual appearance and behavior of showcase widgets.
+/// It provides sensible defaults while allowing full customization.
 class NextgenShowcaseThemeData {
+  /// Creates theme data for showcase widgets.
+  ///
+  /// All parameters have sensible defaults and are optional.
   const NextgenShowcaseThemeData({
     this.backdropColor = const Color(0xCC000000),
     this.cardColor,
@@ -34,19 +51,45 @@ class NextgenShowcaseThemeData {
     this.glowPulseDelta = 10,
   });
 
+  /// The color of the backdrop overlay.
   final Color backdropColor;
+  
+  /// The background color of the showcase card.
   final Color? cardColor;
+  
+  /// The text style for step titles.
   final TextStyle? titleStyle;
+  
+  /// The text style for step descriptions.
   final TextStyle? descriptionStyle;
+  
+  /// The color of the spotlight shadow/glow effect.
   final Color spotlightShadowColor;
+  
+  /// The blur radius of the spotlight shadow/glow effect.
   final double spotlightShadowBlur;
+  
+  /// Whether to enable "stun mode" with glass morphism and gradient effects.
   final bool stunMode;
+  
+  /// Colors for the animated gradient effect in stun mode.
   final List<Color> gradientColors;
+  
+  /// Duration of the gradient animation in milliseconds.
   final int gradientAnimationMs;
+  
+  /// Blur sigma for the glass morphism effect.
   final double glassBlurSigma;
+  
+  /// Opacity of the showcase card in stun mode.
   final double cardOpacity;
+  
+  /// Delta value for the glow pulse animation.
   final double glowPulseDelta;
 
+  /// Creates a copy of this theme data with the given fields replaced.
+  ///
+  /// All parameters are optional and will use the current values if not provided.
   NextgenShowcaseThemeData copyWith({
     Color? backdropColor,
     Color? cardColor,

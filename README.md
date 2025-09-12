@@ -3,7 +3,7 @@
 A modern, lightweight Flutter package to create guided product tours and spotlight walkthroughs in minutes.
 
 [![Pub Version](https://img.shields.io/pub/v/nextgen_showcase.svg)](https://pub.dev/packages/nextgen_showcase)
-[![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=master)](https://github.com/Ven1456/nextgen_showcase.git)
+[![CI](https://github.com/Ven1456/nextgen_showcase.git)
 
 [//]: # ([![codecov]&#40;https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg&#41;]&#40;https://app.codecov.io/gh/your-org/nextgen_showcase&#41;)
 
@@ -12,7 +12,7 @@ A modern, lightweight Flutter package to create guided product tours and spotlig
 [//]: # ()
 [//]: # (https://github.com/your-org/nextgen_showcase/assets/demo.gif)
 
-- Add a short GIF or link a YouTube demo above. Replace the placeholder with your assets.
+[//]: # (- Add a short GIF or link a YouTube demo above. Replace the placeholder with your assets.)
 
 ### Features
 - ✅ Frosted backdrop with spotlight cutout (rectangle, rounded, circle)
@@ -26,7 +26,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nextgen_showcase: ^0.1.3
+  nextgen_showcase: ^0.1.4
 ```
 
 Then run:
@@ -101,10 +101,13 @@ NextgenShowcaseTheme(
 ### Example app
 See `example/` for a runnable demo with multiple steps and actions.
 
-### Roadmap
-- [ ] Async step actions (e.g., open links)
-- [ ] Auto-positioning of info card (above/below target)
-- [ ] A11y: focus trap and screen reader labels
+[//]: # (### Roadmap)
+
+[//]: # (- [ ] Async step actions &#40;e.g., open links&#41;)
+
+[//]: # (- [ ] Auto-positioning of info card &#40;above/below target&#41;)
+
+[//]: # (- [ ] A11y: focus trap and screen reader labels)
 
 ### Contributing
 Contributions are welcome! Please open an issue or PR.
