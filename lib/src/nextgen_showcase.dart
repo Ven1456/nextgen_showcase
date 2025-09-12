@@ -53,7 +53,7 @@ class NextgenShowcase extends StatefulWidget {
   /// showcase appearance and behavior.
   const NextgenShowcase({
     super.key,
-    required this.controller,
+    this.controller,
     required this.steps,
     this.config,
     this.autoStart = true,
@@ -62,7 +62,7 @@ class NextgenShowcase extends StatefulWidget {
   });
 
   /// The controller that manages the showcase state and navigation.
-  final NextgenShowcaseController controller;
+  final NextgenShowcaseController? controller;
 
   /// The list of showcase steps to be displayed.
   final List<ShowcaseStep> steps;
@@ -89,13 +89,17 @@ class NextgenShowcase extends StatefulWidget {
 }
 
 class _NextgenShowcaseState extends State<NextgenShowcase> {
+  late final NextgenShowcaseController _controller =
+      widget.controller ?? NextgenShowcaseController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.controller.setSteps(_withDefaults(widget.steps));
+    _controller.setSteps(_withDefaults(widget.steps));
+    _controller.setConfig(widget.config);
     if (widget.autoStart) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.controller.start(context, initialIndex: widget.initialIndex);
+        _controller.start(context, initialIndex: widget.initialIndex);
       });
     }
   }
@@ -104,11 +108,11 @@ class _NextgenShowcaseState extends State<NextgenShowcase> {
   void didUpdateWidget(covariant NextgenShowcase oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.steps != widget.steps || oldWidget.config != widget.config) {
-      widget.controller.setSteps(_withDefaults(widget.steps));
-      widget.controller.setConfig(widget.config);
-      if (widget.controller.isShowing) {
+      _controller.setSteps(_withDefaults(widget.steps));
+      _controller.setConfig(widget.config);
+      if (_controller.isShowing) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.controller.rebuild(context);
+          _controller.rebuild(context);
         });
       }
     }

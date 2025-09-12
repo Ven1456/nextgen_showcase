@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nextgen_showcase/nextgen_showcase.dart';
 
 /// Unified configuration for Nextgen Showcase with sensible defaults and full control.
 ///
@@ -34,6 +35,18 @@ class ShowcaseConfig {
     this.defaultShape,
     this.defaultBorderRadius,
     this.defaultPadding,
+    this.previousLabel,
+    this.nextLabel,
+    this.closeLabel,
+    this.persistenceKey,
+    this.enablePersistence,
+    this.cardTransition,
+    this.cardTransitionDurationMs,
+    this.waitForAsyncMs,
+    this.retryMissingTargetMax,
+    this.showSkipButton,
+    this.decorators,
+    this.overlayWidgetsBuilder,
   });
 
   /// Visual theme options
@@ -85,4 +98,37 @@ class ShowcaseConfig {
 
   /// Default padding around the spotlight area for all steps.
   final EdgeInsets? defaultPadding;
+
+  /// Accessibility and i18n labels for default controls
+  final String? previousLabel;
+  final String? nextLabel;
+  final String? closeLabel;
+
+  /// Persistence key namespace; when set, we store completion flags.
+  final String? persistenceKey;
+
+  /// Enable persistence (defaults to true if persistenceKey provided).
+  final bool? enablePersistence;
+
+  /// Animation for the info card (fade, zoom, slide, elastic).
+  final CardTransition? cardTransition;
+
+  /// Duration for card transition.
+  final int? cardTransitionDurationMs;
+
+  /// Async handling
+  /// Wait this long before checking target again after a miss.
+  final int? waitForAsyncMs;
+
+  /// Max retries if target is not yet built.
+  final int? retryMissingTargetMax;
+
+  /// Show Skip button on the default card.
+  final bool? showSkipButton;
+
+  /// Optional list of decorators to wrap the overlay stack with custom widgets/effects.
+  final List<ShowcaseDecorator>? decorators;
+
+  /// Additional overlay widgets layered above painter and below the card.
+  final ShowcaseOverlayWidgetBuilder? overlayWidgetsBuilder;
 }

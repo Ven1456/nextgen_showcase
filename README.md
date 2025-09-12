@@ -3,17 +3,15 @@
 A modern, lightweight Flutter package to create guided product tours and spotlight walkthroughs in minutes.
 
 [![Pub Version](https://img.shields.io/pub/v/nextgen_showcase.svg)](https://pub.dev/packages/nextgen_showcase)
-[![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=master)](https://github.com/Ven1456/nextgen_showcase.git)
-
-
-[//]: # ([![codecov]&#40;https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg&#41;]&#40;https://app.codecov.io/gh/your-org/nextgen_showcase&#41;)
+[![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=main)](https://github.com/your-org/nextgen_showcase/actions)
+[![codecov](https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg)](https://app.codecov.io/gh/your-org/nextgen_showcase)
 
 [//]: # (### Demo)
 
 [//]: # ()
 [//]: # (https://github.com/your-org/nextgen_showcase/assets/demo.gif)
 
-[//]: # (- Add a short GIF or link a YouTube demo above. Replace the placeholder with your assets.)
+- Add a short GIF or link a YouTube demo above. Replace the placeholder with your assets.
 
 ### Features
 - ✅ Frosted backdrop with spotlight cutout (rectangle, rounded, circle)
@@ -27,7 +25,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nextgen_showcase: ^0.1.6
+  nextgen_showcase: ^0.1.1
 ```
 
 Then run:
@@ -69,13 +67,18 @@ class _DemoPageState extends State<DemoPage> {
         child: ElevatedButton(
           key: _buttonKey,
           onPressed: () {
-            _controller.setSteps(<ShowcaseStep>[
-              ShowcaseStep(
-                key: _buttonKey,
-                title: 'Primary action',
-                description: 'Tap here to perform the main action.',
-              ),
-            ]);
+            // Fluent builder API
+            ShowcaseBuilder(controller: _controller)
+              .steps(<ShowcaseStep>[
+                ShowcaseStep(
+                  key: _buttonKey,
+                  title: 'Primary action',
+                  description: 'Tap here to perform the main action.',
+                ),
+              ])
+              .config(const ShowcaseConfig(stunMode: true))
+              .onShowcaseEnd(() => debugPrint('Showcase finished'))
+              .applyToController();
             _controller.start(context);
           },
           child: const Text('Showcase me'),
@@ -85,6 +88,15 @@ class _DemoPageState extends State<DemoPage> {
     );
   }
 }
+```
+
+### Builder wrapping
+Wrap your app with the configured showcase in one line:
+```dart
+return ShowcaseBuilder()
+  .steps(steps)
+  .config(const ShowcaseConfig(stunMode: true))
+  .wrap(child: MaterialApp(home: DemoPage()));
 ```
 
 ### Advanced usage
@@ -102,13 +114,10 @@ NextgenShowcaseTheme(
 ### Example app
 See `example/` for a runnable demo with multiple steps and actions.
 
-[//]: # (### Roadmap)
-
-[//]: # (- [ ] Async step actions &#40;e.g., open links&#41;)
-
-[//]: # (- [ ] Auto-positioning of info card &#40;above/below target&#41;)
-
-[//]: # (- [ ] A11y: focus trap and screen reader labels)
+### Roadmap
+- [ ] Async step actions (e.g., open links)
+- [ ] Auto-positioning of info card (above/below target)
+- [ ] A11y: focus trap and screen reader labels
 
 ### Contributing
 Contributions are welcome! Please open an issue or PR.

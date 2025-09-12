@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 import 'models.dart';
 import 'theme.dart';
 import 'config.dart';
+import 'storage.dart';
+import 'ui/spotlight_painter.dart';
 
 /// Controller for managing showcase state and navigation.
 ///
@@ -32,7 +35,13 @@ class NextgenShowcaseController {
   OverlayEntry? _activeEntry;
   final List<ShowcaseStep> _steps = <ShowcaseStep>[];
   int _currentIndex = -1;
-  final ShowcaseConfig? _config;
+  ShowcaseConfig? _config;
+  ShowcaseStorage? _storage;
+
+  // Lifecycle callbacks
+  ValueChanged<int>? onStepStart;
+  ValueChanged<int>? onStepComplete;
+  VoidCallback? onShowcaseEnd;
 
   /// Whether the showcase is currently being displayed.
   bool get isShowing => _activeEntry != null;
@@ -66,15 +75,10 @@ class NextgenShowcaseController {
 
   /// Update configuration while running.
   void setConfig(ShowcaseConfig? config) {
-    // ignore: invalid_use_of_visible_for_testing_member
-    // ignore reason: simple state holder, safe to update
-    // (We keep a private field; just reassign and trigger rebuild when asked.)
-    // This method does not trigger rebuild by itself to avoid requiring a context here.
-    // Call [rebuild] from a widget with context after updating.
-    //
-    // Use a local variable to avoid shadowing analyzer warnings.
-    final ShowcaseConfig? newConfig = config;
-    (this as dynamic)._config = newConfig;
+    _config = config;
+    if ((config?.persistenceKey != null) && (config?.enablePersistence ?? true)) {
+      _storage ??= SharedPrefsShowcaseStorage();
+    }
   }
 
   /// Request rebuild of the overlay if visible.
@@ -92,7 +96,13 @@ class NextgenShowcaseController {
       return;
     }
     _currentIndex = initialIndex.clamp(0, _steps.length - 1);
-    _showCurrent(context);
+    // If persisted as completed, skip entirely
+    _maybeSkipShowcase().then((bool skip) {
+      if (skip) {
+        return;
+      }
+      _showCurrent(context);
+    });
   }
 
   /// Advances to the next step in the showcase.
@@ -102,8 +112,10 @@ class NextgenShowcaseController {
   void next(BuildContext context) {
     if (_currentIndex < 0) return;
     if (_currentIndex + 1 >= _steps.length) {
+      onStepComplete?.call(_currentIndex);
       dismiss();
     } else {
+      onStepComplete?.call(_currentIndex);
       _currentIndex += 1;
       _rebuild(context);
     }
@@ -125,6 +137,8 @@ class NextgenShowcaseController {
     _activeEntry?.remove();
     _activeEntry = null;
     _currentIndex = -1;
+    onShowcaseEnd?.call();
+    _markCompleted();
   }
 
   void _rebuild(BuildContext context) {
@@ -133,9 +147,55 @@ class NextgenShowcaseController {
 
   void _showCurrent(BuildContext context) {
     final ShowcaseStep step = _steps[_currentIndex];
+
+    // Ensure the target is visible in a scrollable before measuring
+    final BuildContext? targetContext = step.key.currentContext;
+    if (targetContext != null) {
+      final ScrollableState? scrollable = Scrollable.maybeOf(targetContext);
+      if (scrollable != null) {
+        // Try to bring into view; then schedule measurement next frame
+        Scrollable.ensureVisible(
+          targetContext,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    }
+
     final RenderBox? targetRenderBox =
-        step.key.currentContext?.findRenderObject() as RenderBox?;
+        targetContext?.findRenderObject() as RenderBox?;
     if (targetRenderBox == null) {
+      // Configurable async wait and retry strategy
+      final int waitMs = _config?.waitForAsyncMs ?? 150;
+      final int maxRetries = _config?.retryMissingTargetMax ?? 5;
+      int tries = 0;
+      void attempt() {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          final RenderBox? retryBox =
+              step.key.currentContext?.findRenderObject() as RenderBox?;
+          if (retryBox == null) {
+            tries += 1;
+            if (tries < maxRetries) {
+              await Future<void>.delayed(Duration(milliseconds: waitMs));
+              attempt();
+            } else {
+              // ignore: avoid_print
+              print('[nextgen_showcase] Target not found for step ${_currentIndex}. Skipping.');
+              if (_currentIndex + 1 < _steps.length) {
+                onStepComplete?.call(_currentIndex);
+                _currentIndex += 1;
+                _showCurrent(context);
+              } else {
+                dismiss();
+              }
+            }
+          } else {
+            _rebuild(context);
+          }
+        });
+      }
+      attempt();
       return;
     }
 
@@ -150,19 +210,39 @@ class NextgenShowcaseController {
             _mergeTheme(baseTheme, _config);
         return NextgenShowcaseTheme(
           data: mergedTheme,
-          child: _ShowcaseOverlay(
+          child: RepaintBoundary(child: _ShowcaseOverlay(
             controller: this,
             targetOffset: targetOffset,
             targetSize: targetSize,
             onClose: dismiss,
             onNext: () => next(context),
             onPrevious: () => previous(context),
-          ),
+          )),
         );
       },
     );
 
     Overlay.of(context, rootOverlay: true).insert(_activeEntry!);
+    onStepStart?.call(_currentIndex);
+  }
+
+  Future<bool> _maybeSkipShowcase() async {
+    final ShowcaseConfig? cfg = _config;
+    if (cfg == null) return false;
+    if (cfg.persistenceKey == null) return false;
+    if (!(cfg.enablePersistence ?? true)) return false;
+    final bool? seen = await (_storage ?? SharedPrefsShowcaseStorage())
+        .readBool('${cfg.persistenceKey!}__completed');
+    return seen == true;
+  }
+
+  Future<void> _markCompleted() async {
+    final ShowcaseConfig? cfg = _config;
+    if (cfg == null) return;
+    if (cfg.persistenceKey == null) return;
+    if (!(cfg.enablePersistence ?? true)) return;
+    await (_storage ?? SharedPrefsShowcaseStorage())
+        .writeBool('${cfg.persistenceKey!}__completed', true);
   }
 
   NextgenShowcaseThemeData _mergeTheme(
@@ -236,11 +316,19 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
   @override
   Widget build(BuildContext context) {
     final NextgenShowcaseThemeData showcaseTheme =
-        NextgenShowcaseTheme.of(context);
+        NextgenShowcaseTheme.resolved(context);
     final ShowcaseStep? step = widget.controller.currentStep;
     final Size screenSize = MediaQuery.of(context).size;
 
-    return Stack(
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.arrowRight): widget.onNext,
+        const SingleActivator(LogicalKeyboardKey.arrowLeft): widget.onPrevious,
+        const SingleActivator(LogicalKeyboardKey.escape): widget.onClose,
+      },
+      child: Focus(
+        autofocus: true,
+        child: Stack(
       children: <Widget>[
         GestureDetector(
           onTap: widget.onClose,
@@ -252,20 +340,27 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
               widget.onPrevious();
             }
           },
-          child: const SizedBox.expand(),
+          child: Semantics(
+            label: step?.title,
+            hint: step?.description,
+            liveRegion: true,
+            child: const SizedBox.expand(),
+          ),
         ),
         Positioned.fill(
           child: AnimatedBuilder(
             animation: _pulse,
             builder: (BuildContext context, Widget? child) {
               if (step == null) return const SizedBox.shrink();
-              return CustomPaint(
-                painter: _SpotlightPainter(
-                  rect: Rect.fromLTWH(
-                      widget.targetOffset.dx,
-                      widget.targetOffset.dy,
-                      widget.targetSize.width,
-                      widget.targetSize.height),
+              final Rect spotlightRect = Rect.fromLTWH(
+                widget.targetOffset.dx,
+                widget.targetOffset.dy,
+                widget.targetSize.width,
+                widget.targetSize.height,
+              );
+              Widget painted = RepaintBoundary(child: CustomPaint(
+                painter: SpotlightPainter(
+                  rect: spotlightRect,
                   shape: step.shape,
                   borderRadius: step.borderRadius,
                   padding: step.padding,
@@ -275,12 +370,28 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
                           ? (showcaseTheme.glowPulseDelta * _pulse.value)
                           : 0),
                   customCutoutPath: step.customCutoutPath,
+                  customCutoutBuilder: step.customCutoutBuilder,
                   stunMode: showcaseTheme.stunMode,
                   backdropColor: showcaseTheme.backdropColor,
                   gradientColors: showcaseTheme.gradientColors,
                   gradientT: _pulse.value,
                 ),
-              );
+              ));
+
+              // Inject overlay widgets below card
+              final List<Widget> extra = (widget.controller._config?.overlayWidgetsBuilder)
+                      ?.call(context, step, spotlightRect) ??
+                  const <Widget>[];
+
+              Widget stack = Stack(children: <Widget>[painted, ...extra]);
+
+              // Apply decorators
+              final List<ShowcaseDecorator>? decos = widget.controller._config?.decorators;
+              for (final ShowcaseDecorator d in decos ?? const <ShowcaseDecorator>[]) {
+                stack = d(context, step, spotlightRect, stack);
+              }
+
+              return stack;
             },
           ),
         ),
@@ -289,38 +400,98 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
           right: 16,
           top: (widget.targetOffset.dy + widget.targetSize.height + 16)
               .clamp(16.0, screenSize.height - 200),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween<double>(begin: 0.8, end: 1.0),
-            duration: const Duration(milliseconds: 320),
-            curve: Curves.easeOutBack,
-            builder: (BuildContext context, double t, Widget? child) {
-              return AnimatedOpacity(
-                duration: const Duration(milliseconds: 220),
-                opacity: t.clamp(0.0, 1.0),
-                child: Transform.translate(
-                  offset: Offset(0, (1 - t) * 16),
-                  child: Transform.scale(
-                    scale: t,
-                    alignment: Alignment.topCenter,
-                    child: child,
-                  ),
-                ),
-              );
-            },
+          child: _CardTransitionWrapper(
+            transition: widget.controller._config?.cardTransition ?? CardTransition.zoom,
+            durationMs: widget.controller._config?.cardTransitionDurationMs ?? 320,
             child: (step?.contentBuilder) != null
-                ? _GlassWrap(child: Builder(builder: step!.contentBuilder!))
-                : _GlassCard(
-                    title: step?.title ?? '',
-                    description: step?.description ?? '',
-                    actions: step?.actions ?? const <ShowcaseAction>[],
-                    onClose: widget.onClose,
-                    onNext: widget.onNext,
-                    onPrevious: widget.onPrevious,
-                  ),
+                ? RepaintBoundary(child: _GlassWrap(child: Builder(builder: step!.contentBuilder!)))
+                : RepaintBoundary(child: Semantics(
+                    container: true,
+                    label: step?.title,
+                    hint: step?.description,
+                    child: _GlassCard(
+                      title: step?.title ?? '',
+                      description: step?.description ?? '',
+                      actions: step?.actions ?? const <ShowcaseAction>[],
+                      onClose: widget.onClose,
+                      onNext: widget.onNext,
+                      onPrevious: widget.onPrevious,
+                      testId: step?.testId,
+                      controller: widget.controller,
+                    ),
+                  )),
           ),
         ),
       ],
+        ),
+      ),
     );
+  }
+}
+
+class _CardTransitionWrapper extends StatelessWidget {
+  const _CardTransitionWrapper({
+    required this.child,
+    required this.transition,
+    required this.durationMs,
+  });
+
+  final Widget child;
+  final CardTransition transition;
+  final int durationMs;
+
+  @override
+  Widget build(BuildContext context) {
+    final Duration d = Duration(milliseconds: durationMs);
+    switch (transition) {
+      case CardTransition.fade:
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: 1),
+          duration: d,
+          builder: (BuildContext context, double t, Widget? _) {
+            return Opacity(opacity: t, child: child);
+          },
+        );
+      case CardTransition.zoom:
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.9, end: 1.0),
+          duration: d,
+          curve: Curves.easeOutBack,
+          builder: (BuildContext context, double t, Widget? _) {
+            final double alpha = ((t - 0.9) / 0.1).clamp(0.0, 1.0);
+            return Opacity(
+              opacity: alpha,
+              child: Transform.scale(scale: t, alignment: Alignment.topCenter, child: child),
+            );
+          },
+        );
+      case CardTransition.slideUp:
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 16, end: 0),
+          duration: d,
+          curve: Curves.easeOut,
+          builder: (BuildContext context, double dy, Widget? _) {
+            final double alpha = (1 - (dy / 16)).clamp(0.0, 1.0);
+            return Opacity(
+              opacity: alpha,
+              child: Transform.translate(offset: Offset(0, dy), child: child),
+            );
+          },
+        );
+      case CardTransition.elasticIn:
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.8, end: 1.0),
+          duration: d,
+          curve: Curves.elasticOut,
+          builder: (BuildContext context, double t, Widget? _) {
+            final double alpha = ((t - 0.8) / 0.2).clamp(0.0, 1.0);
+            return Opacity(
+              opacity: alpha,
+              child: Transform.scale(scale: t, alignment: Alignment.topCenter, child: child),
+            );
+          },
+        );
+    }
   }
 }
 
@@ -332,6 +503,8 @@ class _GlassCard extends StatelessWidget {
     required this.onClose,
     required this.onNext,
     required this.onPrevious,
+    required this.controller,
+    this.testId,
   });
 
   final String title;
@@ -340,6 +513,8 @@ class _GlassCard extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
+  final String? testId;
+  final NextgenShowcaseController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +526,18 @@ class _GlassCard extends StatelessWidget {
         glass ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
     final BorderRadius radius = BorderRadius.circular(16);
 
-    Widget content = Container(
+    final MaterialLocalizations l10n = MaterialLocalizations.of(context);
+    final ShowcaseConfig? cfg = controller?._config;
+
+    final String prevText = cfg?.previousLabel ?? l10n.backButtonTooltip;
+    final String nextText = cfg?.nextLabel ?? l10n.nextPageTooltip;
+    final String closeText = cfg?.closeLabel ?? l10n.closeButtonTooltip;
+
+    Widget content = Semantics(
+      container: true,
+      label: title,
+      hint: description,
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
@@ -377,7 +563,12 @@ class _GlassCard extends StatelessWidget {
                   style: t.titleStyle ?? theme.textTheme.titleLarge,
                 ),
               ),
-              IconButton(icon: const Icon(Icons.close), onPressed: onClose),
+              IconButton(
+                key: testId != null ? Key('${testId!}-close') : null,
+                tooltip: closeText,
+                icon: const Icon(Icons.close),
+                onPressed: onClose,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -388,7 +579,11 @@ class _GlassCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: <Widget>[
-              TextButton(onPressed: onPrevious, child: const Text('Previous')),
+              TextButton(
+                key: testId != null ? Key('${testId!}-previous') : null,
+                onPressed: onPrevious,
+                child: Text(prevText),
+              ),
               const Spacer(),
               ...actions.map((ShowcaseAction action) {
                 return Padding(
@@ -400,10 +595,22 @@ class _GlassCard extends StatelessWidget {
                 );
               }),
               const SizedBox(width: 8),
-              FilledButton(onPressed: onNext, child: const Text('Next')),
+              if ((controller?._config?.showSkipButton ?? true))
+                TextButton(
+                  key: testId != null ? Key('${testId!}-skip') : null,
+                  onPressed: onClose,
+                  child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                ),
+              const SizedBox(width: 8),
+              FilledButton(
+                key: testId != null ? Key('${testId!}-next') : null,
+                onPressed: onNext,
+                child: Text(nextText),
+              ),
             ],
           ),
         ],
+      ),
       ),
     );
 
@@ -467,133 +674,4 @@ class _GlassWrap extends StatelessWidget {
   }
 }
 
-class _SpotlightPainter extends CustomPainter {
-  _SpotlightPainter({
-    required this.rect,
-    required this.shape,
-    required this.borderRadius,
-    required this.padding,
-    required this.shadowColor,
-    required this.shadowBlur,
-    this.customCutoutPath,
-    this.stunMode = false,
-    this.backdropColor = const Color(0xCC000000),
-    this.gradientColors = const <Color>[Colors.black],
-    this.gradientT = 0,
-  });
-
-  final Rect rect;
-  final ShowcaseShape shape;
-  final BorderRadius borderRadius;
-  final EdgeInsets padding;
-  final Color shadowColor;
-  final double shadowBlur;
-  final Path? customCutoutPath;
-  final bool stunMode;
-  final Color backdropColor;
-  final List<Color> gradientColors;
-  final double gradientT;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Path backdrop = Path()..addRect(Offset.zero & size);
-    final Path cutout = Path()..fillType = PathFillType.evenOdd;
-
-    // Apply configurable padding around the rect for spotlight breathing room
-    final Rect padded = Rect.fromLTWH(
-      rect.left - padding.left,
-      rect.top - padding.top,
-      rect.width + padding.horizontal,
-      rect.height + padding.vertical,
-    );
-
-    // Build a dedicated shape path for accurate shadows and cutout
-    final Path shapePath = Path();
-    switch (shape) {
-      case ShowcaseShape.rectangle:
-        shapePath.addRect(padded);
-        break;
-      case ShowcaseShape.circle:
-        shapePath.addOval(Rect.fromCircle(
-            center: padded.center, radius: padded.longestSide / 2));
-        break;
-      case ShowcaseShape.roundedRectangle:
-        shapePath.addRRect(RRect.fromRectAndCorners(
-          padded,
-          topLeft: borderRadius.topLeft,
-          topRight: borderRadius.topRight,
-          bottomLeft: borderRadius.bottomLeft,
-          bottomRight: borderRadius.bottomRight,
-        ));
-        break;
-      case ShowcaseShape.oval:
-        shapePath.addOval(padded);
-        break;
-      case ShowcaseShape.stadium:
-        shapePath.addRRect(RRect.fromRectAndRadius(
-            padded, Radius.circular(padded.shortestSide / 2)));
-        break;
-      case ShowcaseShape.diamond:
-        final Path diamond = Path()
-          ..moveTo(padded.center.dx, padded.top)
-          ..lineTo(padded.right, padded.center.dy)
-          ..lineTo(padded.center.dx, padded.bottom)
-          ..lineTo(padded.left, padded.center.dy)
-          ..close();
-        shapePath.addPath(diamond, Offset.zero);
-        break;
-      case ShowcaseShape.custom:
-        if (customCutoutPath != null) {
-          shapePath.addPath(customCutoutPath!, Offset.zero);
-        } else {
-          shapePath.addRect(padded);
-        }
-        break;
-    }
-
-    // Use even-odd fill to subtract the shape from the backdrop
-    cutout
-      ..addPath(backdrop, Offset.zero)
-      ..addPath(shapePath, Offset.zero);
-
-    final Paint dimPaint = Paint()
-      ..color = Colors.transparent
-      ..blendMode = BlendMode.dstOut;
-
-    // Draw either animated gradient + overlay, or solid backdrop
-    if (stunMode && gradientColors.length >= 2) {
-      final Rect full = Offset.zero & size;
-      final Alignment begin = Alignment(-1 + gradientT * 2, -1);
-      final Alignment end = Alignment(1 - gradientT * 2, 1);
-      final Paint gradientPaint = Paint()
-        ..shader = LinearGradient(
-          begin: begin,
-          end: end,
-          colors: gradientColors,
-          stops: const <double>[0.0, 0.5, 1.0],
-        ).createShader(full);
-      canvas.drawRect(full, gradientPaint);
-      canvas.drawRect(full, Paint()..color = backdropColor);
-    } else {
-      canvas.drawRect(Offset.zero & size, Paint()..color = backdropColor);
-    }
-
-    canvas.saveLayer(Offset.zero & size, Paint());
-    canvas.drawPath(backdrop, Paint()..color = Colors.transparent);
-    canvas.drawPath(cutout, dimPaint);
-    canvas.restore();
-
-    // Draw glow/shadow precisely around the shape path
-    canvas.drawShadow(shapePath, shadowColor, shadowBlur, false);
-  }
-
-  @override
-  bool shouldRepaint(covariant _SpotlightPainter oldDelegate) {
-    return rect != oldDelegate.rect ||
-        shape != oldDelegate.shape ||
-        borderRadius != oldDelegate.borderRadius ||
-        padding != oldDelegate.padding ||
-        shadowColor != oldDelegate.shadowColor ||
-        shadowBlur != oldDelegate.shadowBlur;
-  }
-}
+// Removed duplicate private painter; using shared SpotlightPainter

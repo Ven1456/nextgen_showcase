@@ -25,6 +25,12 @@ class NextgenShowcaseTheme extends InheritedWidget {
     return theme?.data ?? const NextgenShowcaseThemeData();
   }
 
+  /// Returns a theme data resolved against the current Material [Theme] (e.g., brightness).
+  static NextgenShowcaseThemeData resolved(BuildContext context) {
+    final NextgenShowcaseThemeData base = of(context);
+    return base.resolvedFor(context);
+  }
+
   @override
   bool updateShouldNotify(covariant NextgenShowcaseTheme oldWidget) =>
       data != oldWidget.data;
@@ -123,6 +129,27 @@ class NextgenShowcaseThemeData {
       glassBlurSigma: glassBlurSigma ?? this.glassBlurSigma,
       cardOpacity: cardOpacity ?? this.cardOpacity,
       glowPulseDelta: glowPulseDelta ?? this.glowPulseDelta,
+    );
+  }
+
+  /// Create a derived theme using ambient Material theme defaults.
+  NextgenShowcaseThemeData resolvedFor(BuildContext context) {
+    final ThemeData material = Theme.of(context);
+    final bool isDark = material.brightness == Brightness.dark;
+    final Color resolvedCard = cardColor ?? material.colorScheme.surface;
+    final List<Color> resolvedGradient = gradientColors.isNotEmpty
+        ? gradientColors
+        : (isDark
+            ? <Color>[const Color(0xFF263238), const Color(0xFF000000)]
+            : <Color>[const Color(0xFFE0F7FA), const Color(0xFFEDE7F6)]);
+    final Color resolvedBackdrop = isDark
+        ? backdropColor
+        : backdropColor.withAlpha(170); // slightly lighter for light mode
+
+    return copyWith(
+      cardColor: resolvedCard,
+      gradientColors: resolvedGradient,
+      backdropColor: resolvedBackdrop,
     );
   }
 }

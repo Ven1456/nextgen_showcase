@@ -7,6 +7,17 @@ typedef ShowcaseActionCallback = void Function();
 /// Builder function type for custom showcase content.
 typedef ShowcaseContentBuilder = Widget Function(BuildContext context);
 
+/// Builder for a custom cutout path based on the spotlight rect.
+typedef ShowcaseCutoutBuilder = ui.Path Function(ui.Rect rect);
+
+/// Built-in card transition styles.
+enum CardTransition {
+  fade,
+  zoom,
+  slideUp,
+  elasticIn,
+}
+
 /// Available shapes for the spotlight effect.
 enum ShowcaseShape {
   /// Rectangular spotlight with sharp corners.
@@ -30,6 +41,21 @@ enum ShowcaseShape {
   /// Custom shape defined by a path.
   custom
 }
+
+/// Decorator allows wrapping the overlay stack to inject custom effects/widgets.
+typedef ShowcaseDecorator = Widget Function(
+  BuildContext context,
+  ShowcaseStep step,
+  Rect spotlightRect,
+  Widget child,
+);
+
+/// Builder for additional overlay widgets layered above the painter and below the card.
+typedef ShowcaseOverlayWidgetBuilder = List<Widget> Function(
+  BuildContext context,
+  ShowcaseStep step,
+  Rect spotlightRect,
+);
 
 /// Represents an action button in a showcase step.
 ///
@@ -68,6 +94,8 @@ class ShowcaseStep {
     this.padding = const EdgeInsets.all(8),
     this.contentBuilder,
     this.customCutoutPath,
+    this.customCutoutBuilder,
+    this.testId,
   });
 
   /// The global key attached to the target widget.
@@ -99,4 +127,13 @@ class ShowcaseStep {
 
   /// Custom path for the spotlight cutout when using [ShowcaseShape.custom].
   final ui.Path? customCutoutPath;
+
+  /// Custom path builder for the spotlight cutout based on the spotlight rectangle.
+  ///
+  /// When provided and [shape] is [ShowcaseShape.custom], this will be used to
+  /// generate the cutout path. It takes the padded spotlight rectangle.
+  final ShowcaseCutoutBuilder? customCutoutBuilder;
+
+  /// Optional test identifier to facilitate widget tests and semantics keys.
+  final String? testId;
 }
