@@ -4,9 +4,19 @@ import 'models.dart';
 import 'config.dart';
 import 'theme.dart';
 
+/// A widget that marks a target element for showcasing.
+///
+/// This widget wraps the UI element that should be highlighted during
+/// a showcase step. It acts as a marker for the showcase system to
+/// identify and spotlight the target element.
 class ShowcaseTarget extends StatelessWidget {
+  /// Creates a showcase target widget.
+  ///
+  /// The [child] parameter is required and represents the widget
+  /// that will be highlighted during the showcase.
   const ShowcaseTarget({super.key, required this.child});
 
+  /// The widget to be highlighted during the showcase.
   final Widget child;
 
   @override
@@ -16,7 +26,31 @@ class ShowcaseTarget extends StatelessWidget {
 }
 
 /// High-level widget to start a showcase with minimal setup.
+///
+/// This is the main widget that orchestrates the entire showcase experience.
+/// It manages the showcase lifecycle, handles step navigation, and provides
+/// the visual overlay with spotlight effects.
+///
+/// Example usage:
+/// ```dart
+/// NextgenShowcase(
+///   controller: showcaseController,
+///   steps: [
+///     ShowcaseStep(
+///       key: GlobalKey(),
+///       title: 'Welcome!',
+///       description: 'This is your first step.',
+///     ),
+///   ],
+///   child: YourApp(),
+/// )
+/// ```
 class NextgenShowcase extends StatefulWidget {
+  /// Creates a NextgenShowcase widget.
+  ///
+  /// The [controller], [steps], and [child] parameters are required.
+  /// The [config] parameter is optional and allows customization of the
+  /// showcase appearance and behavior.
   const NextgenShowcase({
     super.key,
     required this.controller,
@@ -27,11 +61,27 @@ class NextgenShowcase extends StatefulWidget {
     required this.child,
   });
 
+  /// The controller that manages the showcase state and navigation.
   final NextgenShowcaseController controller;
+  
+  /// The list of showcase steps to be displayed.
   final List<ShowcaseStep> steps;
+  
+  /// Optional configuration for customizing the showcase appearance.
   final ShowcaseConfig? config;
+  
+  /// Whether the showcase should start automatically when the widget is built.
+  ///
+  /// Defaults to `true`. When `false`, you need to manually call
+  /// [NextgenShowcaseController.start] to begin the showcase.
   final bool autoStart;
+  
+  /// The index of the step to start with.
+  ///
+  /// Defaults to `0` (first step). Must be within the bounds of [steps].
   final int initialIndex;
+  
+  /// The child widget that contains the UI elements to be showcased.
   final Widget child;
 
   @override

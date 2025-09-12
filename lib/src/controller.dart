@@ -4,7 +4,29 @@ import 'models.dart';
 import 'theme.dart';
 import 'config.dart';
 
+/// Controller for managing showcase state and navigation.
+///
+/// This controller provides methods to start, stop, and navigate through
+/// showcase steps. It manages the overlay display and handles user interactions.
+///
+/// Example usage:
+/// ```dart
+/// final controller = NextgenShowcaseController();
+/// 
+/// // Start the showcase
+/// controller.start(context);
+/// 
+/// // Navigate to next step
+/// controller.next(context);
+/// 
+/// // Dismiss the showcase
+/// controller.dismiss();
+/// ```
 class NextgenShowcaseController {
+  /// Creates a showcase controller.
+  ///
+  /// The [config] parameter is optional and allows setting default
+  /// configuration that can be overridden later.
   NextgenShowcaseController({ShowcaseConfig? config}) : _config = config;
 
   OverlayEntry? _activeEntry;
@@ -12,11 +34,27 @@ class NextgenShowcaseController {
   int _currentIndex = -1;
   final ShowcaseConfig? _config;
 
+  /// Whether the showcase is currently being displayed.
   bool get isShowing => _activeEntry != null;
+  
+  /// Whether there are any steps available for showcasing.
   bool get hasSteps => _steps.isNotEmpty;
+  
+  /// The current step index (0-based).
+  ///
+  /// Returns -1 if no showcase is active.
   int get currentIndex => _currentIndex;
+  
+  /// The current showcase step being displayed.
+  ///
+  /// Returns `null` if no showcase is active or if the current index
+  /// is out of bounds.
   ShowcaseStep? get currentStep => (_currentIndex >= 0 && _currentIndex < _steps.length) ? _steps[_currentIndex] : null;
 
+  /// Sets the list of showcase steps.
+  ///
+  /// This replaces any existing steps with the new list.
+  /// Call this method when you need to update the showcase steps.
   void setSteps(List<ShowcaseStep> steps) {
     _steps
       ..clear()
@@ -39,6 +77,13 @@ class NextgenShowcaseController {
   /// Request rebuild of the overlay if visible.
   void rebuild(BuildContext context) => _rebuild(context);
 
+  /// Starts the showcase with the specified initial step.
+  ///
+  /// The [context] parameter is required for overlay management.
+  /// The [initialIndex] parameter specifies which step to start with
+  /// (defaults to 0 for the first step).
+  ///
+  /// If there are no steps available, this method does nothing.
   void start(BuildContext context, {int initialIndex = 0}) {
     if (_steps.isEmpty) {
       return;
@@ -47,6 +92,10 @@ class NextgenShowcaseController {
     _showCurrent(context);
   }
 
+  /// Advances to the next step in the showcase.
+  ///
+  /// If this is the last step, the showcase will be dismissed.
+  /// If no showcase is active, this method does nothing.
   void next(BuildContext context) {
     if (_currentIndex < 0) return;
     if (_currentIndex + 1 >= _steps.length) {
@@ -57,12 +106,18 @@ class NextgenShowcaseController {
     }
   }
 
+  /// Goes back to the previous step in the showcase.
+  ///
+  /// If this is the first step or no showcase is active, this method does nothing.
   void previous(BuildContext context) {
     if (_currentIndex <= 0) return;
     _currentIndex -= 1;
     _rebuild(context);
   }
 
+  /// Dismisses the current showcase.
+  ///
+  /// This removes the overlay and resets the controller state.
   void dismiss() {
     _activeEntry?.remove();
     _activeEntry = null;
@@ -277,7 +332,7 @@ class _GlassCard extends StatelessWidget {
     final NextgenShowcaseThemeData t = NextgenShowcaseTheme.of(context);
     final bool glass = t.stunMode;
     final Color baseColor = (t.cardColor) ?? theme.colorScheme.surface;
-    final Color cardColor = glass ? baseColor.withOpacity(t.cardOpacity) : baseColor;
+    final Color cardColor = glass ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
     final BorderRadius radius = BorderRadius.circular(16);
 
     Widget content = Container(
@@ -287,12 +342,12 @@ class _GlassCard extends StatelessWidget {
         borderRadius: radius,
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withAlpha(25),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
         ],
-        border: glass ? Border.all(color: Colors.white.withOpacity(0.2)) : null,
+        border: glass ? Border.all(color: Colors.white.withAlpha(20)) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +416,7 @@ class _GlassWrap extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final BorderRadius radius = BorderRadius.circular(16);
     final Color baseColor = (t.cardColor) ?? theme.colorScheme.surface;
-    final Color cardColor = t.stunMode ? baseColor.withOpacity(t.cardOpacity) : baseColor;
+    final Color cardColor = t.stunMode ? baseColor.withAlpha(t.cardOpacity.toInt()) : baseColor;
     Widget content = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -369,12 +424,12 @@ class _GlassWrap extends StatelessWidget {
         borderRadius: radius,
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withAlpha(t.cardOpacity.toInt()),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
         ],
-        border: t.stunMode ? Border.all(color: Colors.white.withOpacity(0.2)) : null,
+        border: t.stunMode ? Border.all(color: Colors.white.withAlpha(20)) : null,
       ),
       child: child,
     );

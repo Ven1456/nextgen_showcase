@@ -1,3 +1,16 @@
+## 0.1.5
+- Update the Repository URL
+
+## 0.1.4
+- Fix: update Documentation in code level
+
+## 0.1.3
+- Fix: update README Github Branch 
+
+## 0.1.2
+- Chore: Added Config File 
+- Docs: update README Github Links 
+
 ## 0.1.1
 - Fix: resolve pubspec `screenshots` path error by declaring `assets/`
 - Chore: add `assets/placeholder.svg` dummy image
