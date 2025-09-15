@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
@@ -76,13 +77,38 @@ class NextgenShowcaseController {
   /// Update configuration while running.
   void setConfig(ShowcaseConfig? config) {
     _config = config;
-    if ((config?.persistenceKey != null) && (config?.enablePersistence ?? true)) {
+    if ((config?.persistenceKey != null) &&
+        (config?.enablePersistence ?? true)) {
       _storage ??= SharedPrefsShowcaseStorage();
     }
   }
 
   /// Request rebuild of the overlay if visible.
   void rebuild(BuildContext context) => _rebuild(context);
+
+  /// Convenience: Show a one-off showcase for a single target.
+  ///
+  /// This API mirrors what tests expect: provide a [context], a [targetKey],
+  /// [title] and [description]. It creates a single [ShowcaseStep], sets it,
+  /// and starts the showcase immediately.
+  void show({
+    required BuildContext context,
+    required GlobalKey targetKey,
+    required String title,
+    required String description,
+  }) {
+    setSteps(<ShowcaseStep>[
+      ShowcaseStep(
+        key: targetKey,
+        title: title,
+        description: description,
+      ),
+    ]);
+    start(context);
+  }
+
+  /// Convenience: Hide the current showcase if visible.
+  void hide() => dismiss();
 
   /// Starts the showcase with the specified initial step.
   ///
@@ -94,6 +120,11 @@ class NextgenShowcaseController {
   void start(BuildContext context, {int initialIndex = 0}) {
     if (_steps.isEmpty) {
       return;
+    }
+    // Ensure any existing overlay from this controller is removed
+    if (_activeEntry != null) {
+      _activeEntry!.remove();
+      _activeEntry = null;
     }
     _currentIndex = initialIndex.clamp(0, _steps.length - 1);
     // If persisted as completed, skip entirely
@@ -117,7 +148,7 @@ class NextgenShowcaseController {
     } else {
       onStepComplete?.call(_currentIndex);
       _currentIndex += 1;
-      _rebuild(context);
+      _showCurrent(context);
     }
   }
 
@@ -127,7 +158,7 @@ class NextgenShowcaseController {
   void previous(BuildContext context) {
     if (_currentIndex <= 0) return;
     _currentIndex -= 1;
-    _rebuild(context);
+    _showCurrent(context);
   }
 
   /// Dismisses the current showcase.
@@ -181,7 +212,8 @@ class NextgenShowcaseController {
               attempt();
             } else {
               // ignore: avoid_print
-              print('[nextgen_showcase] Target not found for step ${_currentIndex}. Skipping.');
+              print(
+                  '[nextgen_showcase] Target not found for step ${_currentIndex}. Skipping.');
               if (_currentIndex + 1 < _steps.length) {
                 onStepComplete?.call(_currentIndex);
                 _currentIndex += 1;
@@ -195,12 +227,19 @@ class NextgenShowcaseController {
           }
         });
       }
+
       attempt();
       return;
     }
 
     final Offset targetOffset = targetRenderBox.localToGlobal(Offset.zero);
     final Size targetSize = targetRenderBox.size;
+
+    // Remove any previously inserted overlay before creating a new one
+    if (_activeEntry != null) {
+      _activeEntry!.remove();
+      _activeEntry = null;
+    }
 
     _activeEntry = OverlayEntry(
       builder: (BuildContext overlayContext) {
@@ -210,7 +249,8 @@ class NextgenShowcaseController {
             _mergeTheme(baseTheme, _config);
         return NextgenShowcaseTheme(
           data: mergedTheme,
-          child: RepaintBoundary(child: _ShowcaseOverlay(
+          child: RepaintBoundary(
+              child: _ShowcaseOverlay(
             controller: this,
             targetOffset: targetOffset,
             targetSize: targetSize,
@@ -250,6 +290,7 @@ class NextgenShowcaseController {
     if (config == null) return base;
     return base.copyWith(
       backdropColor: config.backdropColor,
+      backdropBlurSigma: config.backdropBlurSigma,
       cardColor: config.cardColor,
       titleStyle: config.titleStyle,
       descriptionStyle: config.descriptionStyle,
@@ -329,100 +370,119 @@ class _ShowcaseOverlayState extends State<_ShowcaseOverlay>
       child: Focus(
         autofocus: true,
         child: Stack(
-      children: <Widget>[
-        GestureDetector(
-          onTap: widget.onClose,
-          onHorizontalDragEnd: (DragEndDetails d) {
-            if (d.primaryVelocity == null) return;
-            if (d.primaryVelocity! < 0) {
-              widget.onNext();
-            } else if (d.primaryVelocity! > 0) {
-              widget.onPrevious();
-            }
-          },
-          child: Semantics(
-            label: step?.title,
-            hint: step?.description,
-            liveRegion: true,
-            child: const SizedBox.expand(),
-          ),
-        ),
-        Positioned.fill(
-          child: AnimatedBuilder(
-            animation: _pulse,
-            builder: (BuildContext context, Widget? child) {
-              if (step == null) return const SizedBox.shrink();
-              final Rect spotlightRect = Rect.fromLTWH(
-                widget.targetOffset.dx,
-                widget.targetOffset.dy,
-                widget.targetSize.width,
-                widget.targetSize.height,
-              );
-              Widget painted = RepaintBoundary(child: CustomPaint(
-                painter: SpotlightPainter(
-                  rect: spotlightRect,
-                  shape: step.shape,
-                  borderRadius: step.borderRadius,
+          children: <Widget>[
+            GestureDetector(
+              onTap: widget.onClose,
+              onHorizontalDragEnd: (DragEndDetails d) {
+                if (d.primaryVelocity == null) return;
+                if (d.primaryVelocity! < 0) {
+                  widget.onNext();
+                } else if (d.primaryVelocity! > 0) {
+                  widget.onPrevious();
+                }
+              },
+              child: Semantics(
+                label: step?.title,
+                hint: step?.description,
+                liveRegion: true,
+                child: const SizedBox.expand(),
+              ),
+            ),
+            if (step != null)
+              Positioned.fill(
+                child: _BackdropLayer(
+                  rect: Rect.fromLTWH(
+                    widget.targetOffset.dx,
+                    widget.targetOffset.dy,
+                    widget.targetSize.width,
+                    widget.targetSize.height,
+                  ),
                   padding: step.padding,
-                  shadowColor: showcaseTheme.spotlightShadowColor,
-                  shadowBlur: showcaseTheme.spotlightShadowBlur +
-                      (showcaseTheme.stunMode
-                          ? (showcaseTheme.glowPulseDelta * _pulse.value)
-                          : 0),
+                  borderRadius: step.borderRadius,
                   customCutoutPath: step.customCutoutPath,
                   customCutoutBuilder: step.customCutoutBuilder,
-                  stunMode: showcaseTheme.stunMode,
-                  backdropColor: showcaseTheme.backdropColor,
-                  gradientColors: showcaseTheme.gradientColors,
-                  gradientT: _pulse.value,
+                  backdropBuilder: widget.controller._config?.backdropBuilder,
                 ),
-              ));
-
-              // Inject overlay widgets below card
-              final List<Widget> extra = (widget.controller._config?.overlayWidgetsBuilder)
-                      ?.call(context, step, spotlightRect) ??
-                  const <Widget>[];
-
-              Widget stack = Stack(children: <Widget>[painted, ...extra]);
-
-              // Apply decorators
-              final List<ShowcaseDecorator>? decos = widget.controller._config?.decorators;
-              for (final ShowcaseDecorator d in decos ?? const <ShowcaseDecorator>[]) {
-                stack = d(context, step, spotlightRect, stack);
-              }
-
-              return stack;
-            },
-          ),
-        ),
-        Positioned(
-          left: 16,
-          right: 16,
-          top: (widget.targetOffset.dy + widget.targetSize.height + 16)
-              .clamp(16.0, screenSize.height - 200),
-          child: _CardTransitionWrapper(
-            transition: widget.controller._config?.cardTransition ?? CardTransition.zoom,
-            durationMs: widget.controller._config?.cardTransitionDurationMs ?? 320,
-            child: (step?.contentBuilder) != null
-                ? RepaintBoundary(child: _GlassWrap(child: Builder(builder: step!.contentBuilder!)))
-                : RepaintBoundary(child: Semantics(
-                    container: true,
-                    label: step?.title,
-                    hint: step?.description,
-                    child: _GlassCard(
-                      title: step?.title ?? '',
-                      description: step?.description ?? '',
-                      actions: step?.actions ?? const <ShowcaseAction>[],
-                      onClose: widget.onClose,
-                      onNext: widget.onNext,
-                      onPrevious: widget.onPrevious,
-                      testId: step?.testId,
-                      controller: widget.controller,
+              ),
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: _pulse,
+                builder: (BuildContext context, Widget? child) {
+                  if (step == null) return const SizedBox.shrink();
+                  final Rect spotlightRect = Rect.fromLTWH(
+                    widget.targetOffset.dx,
+                    widget.targetOffset.dy,
+                    widget.targetSize.width,
+                    widget.targetSize.height,
+                  );
+                  Widget painted = RepaintBoundary(
+                      child: CustomPaint(
+                    painter: SpotlightPainter(
+                      rect: spotlightRect,
+                      borderRadius: step.borderRadius,
+                      padding: step.padding,
+                      customCutoutPath: step.customCutoutPath,
+                      customCutoutBuilder: step.customCutoutBuilder,
+                      stunMode: showcaseTheme.stunMode,
+                      backdropColor: showcaseTheme.backdropColor,
+                      gradientColors: showcaseTheme.gradientColors,
+                      gradientT: _pulse.value,
                     ),
-                  )),
-          ),
-        ),
-      ],
+                  ));
+
+                  // Inject overlay widgets below card
+                  final List<Widget> extra =
+                      (widget.controller._config?.overlayWidgetsBuilder)
+                              ?.call(context, step, spotlightRect) ??
+                          const <Widget>[];
+
+                  Widget stack = Stack(children: <Widget>[painted, ...extra]);
+
+                  // Apply decorators
+                  final List<ShowcaseDecorator>? decos =
+                      widget.controller._config?.decorators;
+                  for (final ShowcaseDecorator d
+                      in decos ?? const <ShowcaseDecorator>[]) {
+                    stack = d(context, step, spotlightRect, stack);
+                  }
+
+                  return stack;
+                },
+              ),
+            ),
+            Positioned(
+              left: 16,
+              right: 16,
+              top: (widget.targetOffset.dy + widget.targetSize.height + 16)
+                  .clamp(16.0, screenSize.height - 200),
+              child: _CardTransitionWrapper(
+                transition: widget.controller._config?.cardTransition ??
+                    CardTransition.zoom,
+                durationMs:
+                    widget.controller._config?.cardTransitionDurationMs ?? 320,
+                child: (step?.contentBuilder) != null
+                    ? RepaintBoundary(
+                        child: _GlassWrap(
+                            child: Builder(builder: step!.contentBuilder!)))
+                    : RepaintBoundary(
+                        child: Semantics(
+                        container: true,
+                        label: step?.title,
+                        hint: step?.description,
+                        child: _GlassCard(
+                          title: step?.title ?? '',
+                          description: step?.description ?? '',
+                          actions: step?.actions ?? const <ShowcaseAction>[],
+                          onClose: widget.onClose,
+                          onNext: widget.onNext,
+                          onPrevious: widget.onPrevious,
+                          testId: step?.testId,
+                          controller: widget.controller,
+                        ),
+                      )),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -454,24 +514,25 @@ class _CardTransitionWrapper extends StatelessWidget {
         );
       case CardTransition.zoom:
         return TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0.9, end: 1.0),
+          tween: Tween<double>(begin: 0.8, end: 1.0),
           duration: d,
-          curve: Curves.easeOutBack,
+          curve: Curves.elasticOut,
           builder: (BuildContext context, double t, Widget? _) {
-            final double alpha = ((t - 0.9) / 0.1).clamp(0.0, 1.0);
+            final double alpha = ((t - 0.8) / 0.2).clamp(0.0, 1.0);
             return Opacity(
               opacity: alpha,
-              child: Transform.scale(scale: t, alignment: Alignment.topCenter, child: child),
+              child: Transform.scale(
+                  scale: t, alignment: Alignment.topCenter, child: child),
             );
           },
         );
       case CardTransition.slideUp:
         return TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 16, end: 0),
+          tween: Tween<double>(begin: 32, end: 0),
           duration: d,
-          curve: Curves.easeOut,
+          curve: Curves.easeOutCubic,
           builder: (BuildContext context, double dy, Widget? _) {
-            final double alpha = (1 - (dy / 16)).clamp(0.0, 1.0);
+            final double alpha = (1 - (dy / 32)).clamp(0.0, 1.0);
             return Opacity(
               opacity: alpha,
               child: Transform.translate(offset: Offset(0, dy), child: child),
@@ -487,7 +548,35 @@ class _CardTransitionWrapper extends StatelessWidget {
             final double alpha = ((t - 0.8) / 0.2).clamp(0.0, 1.0);
             return Opacity(
               opacity: alpha,
-              child: Transform.scale(scale: t, alignment: Alignment.topCenter, child: child),
+              child: Transform.scale(
+                  scale: t, alignment: Alignment.topCenter, child: child),
+            );
+          },
+        );
+      case CardTransition.slideFromRight:
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 100, end: 0),
+          duration: d,
+          curve: Curves.easeOutCubic,
+          builder: (BuildContext context, double dx, Widget? _) {
+            final double alpha = (1 - (dx / 100)).clamp(0.0, 1.0);
+            return Opacity(
+              opacity: alpha,
+              child: Transform.translate(offset: Offset(dx, 0), child: child),
+            );
+          },
+        );
+      case CardTransition.bounceIn:
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.3, end: 1.0),
+          duration: d,
+          curve: Curves.bounceOut,
+          builder: (BuildContext context, double t, Widget? _) {
+            final double alpha = ((t - 0.3) / 0.7).clamp(0.0, 1.0);
+            return Opacity(
+              opacity: alpha,
+              child: Transform.scale(
+                  scale: t, alignment: Alignment.center, child: child),
             );
           },
         );
@@ -538,79 +627,80 @@ class _GlassCard extends StatelessWidget {
       label: title,
       hint: description,
       child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: radius,
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black.withAlpha(25),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-        border: glass ? Border.all(color: Colors.white.withAlpha(20)) : null,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  title,
-                  style: t.titleStyle ?? theme.textTheme.titleLarge,
-                ),
-              ),
-              IconButton(
-                key: testId != null ? Key('${testId!}-close') : null,
-                tooltip: closeText,
-                icon: const Icon(Icons.close),
-                onPressed: onClose,
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: t.descriptionStyle ?? theme.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: <Widget>[
-              TextButton(
-                key: testId != null ? Key('${testId!}-previous') : null,
-                onPressed: onPrevious,
-                child: Text(prevText),
-              ),
-              const Spacer(),
-              ...actions.map((ShowcaseAction action) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: FilledButton.tonal(
-                    onPressed: action.onPressed,
-                    child: Text(action.label),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: radius,
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withAlpha(25),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
+          border: glass ? Border.all(color: Colors.white.withAlpha(20)) : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    title,
+                    style: t.titleStyle ?? theme.textTheme.titleLarge,
                   ),
-                );
-              }),
-              const SizedBox(width: 8),
-              if ((controller?._config?.showSkipButton ?? true))
-                TextButton(
-                  key: testId != null ? Key('${testId!}-skip') : null,
-                  onPressed: onClose,
-                  child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 ),
-              const SizedBox(width: 8),
-              FilledButton(
-                key: testId != null ? Key('${testId!}-next') : null,
-                onPressed: onNext,
-                child: Text(nextText),
-              ),
-            ],
-          ),
-        ],
-      ),
+                IconButton(
+                  key: testId != null ? Key('${testId!}-close') : null,
+                  tooltip: closeText,
+                  icon: const Icon(Icons.close),
+                  onPressed: onClose,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              style: t.descriptionStyle ?? theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: <Widget>[
+                TextButton(
+                  key: testId != null ? Key('${testId!}-previous') : null,
+                  onPressed: onPrevious,
+                  child: Text(prevText),
+                ),
+                const Spacer(),
+                ...actions.map((ShowcaseAction action) {
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: FilledButton.tonal(
+                      onPressed: action.onPressed,
+                      child: Text(action.label),
+                    ),
+                  );
+                }),
+                const SizedBox(width: 8),
+                if ((controller?._config?.showSkipButton ?? true))
+                  TextButton(
+                    key: testId != null ? Key('${testId!}-skip') : null,
+                    onPressed: onClose,
+                    child: Text(
+                        MaterialLocalizations.of(context).cancelButtonLabel),
+                  ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  key: testId != null ? Key('${testId!}-next') : null,
+                  onPressed: onNext,
+                  child: Text(nextText),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
 
@@ -672,6 +762,118 @@ class _GlassWrap extends StatelessWidget {
       ),
     );
   }
+}
+
+class _BackdropLayer extends StatelessWidget {
+  const _BackdropLayer({
+    required this.rect,
+    required this.padding,
+    required this.borderRadius,
+    this.customCutoutPath,
+    this.customCutoutBuilder,
+    this.backdropBuilder,
+  });
+
+  final Rect rect;
+  final EdgeInsets padding;
+  final BorderRadius borderRadius;
+  final ui.Path? customCutoutPath;
+  final ShowcaseCutoutBuilder? customCutoutBuilder;
+  final ShowcaseBackdropBuilder? backdropBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    final NextgenShowcaseThemeData t = NextgenShowcaseTheme.of(context);
+    if ((t.backdropBlurSigma <= 0) && (t.backdropColor.alpha == 0)) {
+      return const SizedBox.shrink();
+    }
+
+    final Rect padded = Rect.fromLTWH(
+      rect.left - padding.left,
+      rect.top - padding.top,
+      rect.width + padding.horizontal,
+      rect.height + padding.vertical,
+    );
+
+    final Path rectPath = Path()
+      ..addRRect(RRect.fromRectAndCorners(
+        padded,
+        topLeft: borderRadius.topLeft,
+        topRight: borderRadius.topRight,
+        bottomLeft: borderRadius.bottomLeft,
+        bottomRight: borderRadius.bottomRight,
+      ));
+
+    Path? customPath;
+    if (customCutoutBuilder != null) {
+      customPath = customCutoutBuilder!(padded);
+    } else if (customCutoutPath != null) {
+      customPath = customCutoutPath!;
+    }
+
+    final Path shapePath = customPath == null
+        ? rectPath
+        : Path.combine(PathOperation.union, rectPath, customPath);
+
+    final Widget defaultLayer = ClipPath(
+      clipper: _EvenOddClipper(cutout: shapePath),
+      clipBehavior: Clip.antiAlias,
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(
+          sigmaX: t.backdropBlurSigma,
+          sigmaY: t.backdropBlurSigma,
+        ),
+        child: Container(color: Colors.transparent),
+      ),
+    );
+
+    if (backdropBuilder != null) {
+      return backdropBuilder!(
+        context,
+        padded,
+        t,
+        defaultLayer,
+      );
+    }
+
+    return defaultLayer;
+  }
+}
+
+class _EvenOddClipper extends CustomClipper<Path> {
+  _EvenOddClipper({required this.cutout});
+
+  final Path cutout;
+
+  @override
+  Path getClip(Size size) {
+    final Path p = Path()..fillType = PathFillType.evenOdd;
+    p.addRect(Offset.zero & size);
+    p.addPath(cutout, Offset.zero);
+    return p;
+  }
+
+  @override
+  bool shouldReclip(covariant _EvenOddClipper oldClipper) =>
+      !_arePathsEqual(cutout, oldClipper.cutout);
+}
+bool _arePathsEqual(Path a, Path b) {
+  final ui.PathMetrics am = a.computeMetrics();
+  final ui.PathMetrics bm = b.computeMetrics();
+
+  if (am.length != bm.length) return false;
+
+  final List<Offset> pointsA = [];
+  for (final m in am) {
+    pointsA.add(m.getTangentForOffset(m.length / 2)!.position);
+  }
+
+  final List<Offset> pointsB = [];
+  for (final m in bm) {
+    pointsB.add(m.getTangentForOffset(m.length / 2)!.position);
+  }
+
+  return listEquals(pointsA, pointsB);
 }
 
 // Removed duplicate private painter; using shared SpotlightPainter

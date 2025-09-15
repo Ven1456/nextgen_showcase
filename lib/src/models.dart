@@ -16,6 +16,8 @@ enum CardTransition {
   zoom,
   slideUp,
   elasticIn,
+  slideFromRight,
+  bounceIn,
 }
 
 /// Available shapes for the spotlight effect.

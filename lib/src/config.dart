@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nextgen_showcase/nextgen_showcase.dart';
 
+/// Optional builder to customize the backdrop layer (e.g., use third‑party blur/color widgets).
+typedef ShowcaseBackdropBuilder = Widget Function(
+  BuildContext context,
+  Rect spotlightRect,
+  NextgenShowcaseThemeData theme,
+  Widget child,
+);
+
 /// Unified configuration for Nextgen Showcase with sensible defaults and full control.
 ///
 /// This class allows you to customize the appearance and behavior of the showcase.
@@ -21,6 +29,8 @@ class ShowcaseConfig {
   /// All parameters are optional and will use default values if not provided.
   const ShowcaseConfig({
     this.backdropColor,
+    this.backdropBlurSigma,
+    this.backdropBuilder,
     this.cardColor,
     this.titleStyle,
     this.descriptionStyle,
@@ -53,6 +63,12 @@ class ShowcaseConfig {
 
   /// The color of the backdrop overlay.
   final Color? backdropColor;
+
+  /// The blur sigma to apply to the entire backdrop overlay.
+  final double? backdropBlurSigma;
+
+  /// Optional custom backdrop builder for integrating external blur/color libraries.
+  final ShowcaseBackdropBuilder? backdropBuilder;
 
   /// The background color of the showcase card.
   final Color? cardColor;
