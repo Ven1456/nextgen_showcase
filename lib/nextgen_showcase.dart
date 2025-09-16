@@ -14,5 +14,7 @@ export 'src/models.dart';
 export 'src/nextgen_showcase.dart';
 export 'src/theme.dart';
 export 'src/builder.dart';
+export 'src/showcase_builder.dart';
+export 'src/showcase_manager.dart';
 export 'src/storage.dart';
 export 'src/api.dart';

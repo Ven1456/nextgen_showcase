@@ -45,7 +45,8 @@ class NextgenShowcaseThemeData {
   ///
   /// All parameters have sensible defaults and are optional.
   const NextgenShowcaseThemeData({
-    this.backdropColor = const Color(0xCC000000),
+    this.backdropColor = const Color(0xE6000000),
+    this.backdropBlurSigma = 0,
     this.cardColor,
     this.titleStyle,
     this.descriptionStyle,
@@ -53,9 +54,10 @@ class NextgenShowcaseThemeData {
     this.spotlightShadowBlur = 24,
     this.stunMode = false,
     this.gradientColors = const <Color>[
-      Color(0xFF00E5FF),
-      Color(0xFF7C4DFF),
-      Color(0xFFFF4081)
+      Color(0xFF667eea),
+      Color(0xFF764ba2),
+      Color(0xFFf093fb),
+      Color(0xFFf5576c)
     ],
     this.gradientAnimationMs = 4000,
     this.glassBlurSigma = 12,
@@ -65,6 +67,11 @@ class NextgenShowcaseThemeData {
 
   /// The color of the backdrop overlay.
   final Color backdropColor;
+
+  /// The blur sigma applied to the entire backdrop overlay (behind the dim layer).
+  ///
+  /// Use 0 to disable backdrop blurring.
+  final double backdropBlurSigma;
 
   /// The background color of the showcase card.
   final Color? cardColor;
@@ -104,6 +111,7 @@ class NextgenShowcaseThemeData {
   /// All parameters are optional and will use the current values if not provided.
   NextgenShowcaseThemeData copyWith({
     Color? backdropColor,
+    double? backdropBlurSigma,
     Color? cardColor,
     TextStyle? titleStyle,
     TextStyle? descriptionStyle,
@@ -118,6 +126,7 @@ class NextgenShowcaseThemeData {
   }) {
     return NextgenShowcaseThemeData(
       backdropColor: backdropColor ?? this.backdropColor,
+      backdropBlurSigma: backdropBlurSigma ?? this.backdropBlurSigma,
       cardColor: cardColor ?? this.cardColor,
       titleStyle: titleStyle ?? this.titleStyle,
       descriptionStyle: descriptionStyle ?? this.descriptionStyle,
@@ -137,19 +146,30 @@ class NextgenShowcaseThemeData {
     final ThemeData material = Theme.of(context);
     final bool isDark = material.brightness == Brightness.dark;
     final Color resolvedCard = cardColor ?? material.colorScheme.surface;
+    
+    // Enhanced gradient colors for better visual appeal
     final List<Color> resolvedGradient = gradientColors.isNotEmpty
         ? gradientColors
         : (isDark
-            ? <Color>[const Color(0xFF263238), const Color(0xFF000000)]
-            : <Color>[const Color(0xFFE0F7FA), const Color(0xFFEDE7F6)]);
-    final Color resolvedBackdrop = isDark
-        ? backdropColor
-        : backdropColor.withAlpha(170); // slightly lighter for light mode
-
+            ? <Color>[
+                const Color(0xFF667eea),
+                const Color(0xFF764ba2),
+                const Color(0xFFf093fb),
+                const Color(0xFFf5576c)
+              ]
+            : <Color>[
+                const Color(0xFF667eea),
+                const Color(0xFF764ba2),
+                const Color(0xFFf093fb),
+                const Color(0xFFf5576c)
+              ]);
+    
     return copyWith(
       cardColor: resolvedCard,
       gradientColors: resolvedGradient,
-      backdropColor: resolvedBackdrop,
+      // Preserve user-configured backdrop color; do not override here
+      backdropColor: backdropColor,
+      backdropBlurSigma: backdropBlurSigma,
     );
   }
 }

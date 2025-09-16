@@ -5,11 +5,8 @@ import '../models.dart';
 class SpotlightPainter extends CustomPainter {
   SpotlightPainter({
     required this.rect,
-    required this.shape,
     required this.borderRadius,
     required this.padding,
-    required this.shadowColor,
-    required this.shadowBlur,
     this.customCutoutPath,
     this.customCutoutBuilder,
     this.stunMode = false,
@@ -19,11 +16,8 @@ class SpotlightPainter extends CustomPainter {
   });
 
   final Rect rect;
-  final ShowcaseShape shape;
   final BorderRadius borderRadius;
   final EdgeInsets padding;
-  final Color shadowColor;
-  final double shadowBlur;
   final Path? customCutoutPath;
   final ShowcaseCutoutBuilder? customCutoutBuilder;
   final bool stunMode;
@@ -43,49 +37,27 @@ class SpotlightPainter extends CustomPainter {
       rect.height + padding.vertical,
     );
 
-    final Path shapePath = Path();
-    switch (shape) {
-      case ShowcaseShape.rectangle:
-        shapePath.addRect(padded);
-        break;
-      case ShowcaseShape.circle:
-        shapePath.addOval(Rect.fromCircle(center: padded.center, radius: padded.longestSide / 2));
-        break;
-      case ShowcaseShape.roundedRectangle:
-        shapePath.addRRect(RRect.fromRectAndCorners(
-          padded,
-          topLeft: borderRadius.topLeft,
-          topRight: borderRadius.topRight,
-          bottomLeft: borderRadius.bottomLeft,
-          bottomRight: borderRadius.bottomRight,
-        ));
-        break;
-      case ShowcaseShape.oval:
-        shapePath.addOval(padded);
-        break;
-      case ShowcaseShape.stadium:
-        shapePath.addRRect(RRect.fromRectAndRadius(padded, Radius.circular(padded.shortestSide / 2)));
-        break;
-      case ShowcaseShape.diamond:
-        final Path diamond = Path()
-          ..moveTo(padded.center.dx, padded.top)
-          ..lineTo(padded.right, padded.center.dy)
-          ..lineTo(padded.center.dx, padded.bottom)
-          ..lineTo(padded.left, padded.center.dy)
-          ..close();
-        shapePath.addPath(diamond, Offset.zero);
-        break;
-      case ShowcaseShape.custom:
-        if (customCutoutBuilder != null) {
-          final Path built = customCutoutBuilder!(padded);
-          shapePath.addPath(built, Offset.zero);
-        } else if (customCutoutPath != null) {
-          shapePath.addPath(customCutoutPath!, Offset.zero);
-        } else {
-          shapePath.addRect(padded);
-        }
-        break;
+    // Base spotlight is a rounded rectangle around the target.
+    final Path rectPath = Path()
+      ..addRRect(RRect.fromRectAndCorners(
+        padded,
+        topLeft: borderRadius.topLeft,
+        topRight: borderRadius.topRight,
+        bottomLeft: borderRadius.bottomLeft,
+        bottomRight: borderRadius.bottomRight,
+      ));
+
+    // Allow user to draw a custom shape, and connect/union it with the base rect.
+    Path? customPath;
+    if (customCutoutBuilder != null) {
+      customPath = customCutoutBuilder!(padded);
+    } else if (customCutoutPath != null) {
+      customPath = customCutoutPath!;
     }
+
+    final Path shapePath = customPath == null
+        ? rectPath
+        : Path.combine(PathOperation.union, rectPath, customPath);
 
     cutout
       ..addPath(backdrop, Offset.zero)
@@ -117,17 +89,14 @@ class SpotlightPainter extends CustomPainter {
     canvas.drawPath(cutout, dimPaint);
     canvas.restore();
 
-    canvas.drawShadow(shapePath, shadowColor, shadowBlur, false);
+    // No spotlight blur/shadow; kept intentionally clean per requirements.
   }
 
   @override
   bool shouldRepaint(covariant SpotlightPainter oldDelegate) {
     return rect != oldDelegate.rect ||
-        shape != oldDelegate.shape ||
         borderRadius != oldDelegate.borderRadius ||
         padding != oldDelegate.padding ||
-        shadowColor != oldDelegate.shadowColor ||
-        shadowBlur != oldDelegate.shadowBlur ||
         gradientT != oldDelegate.gradientT ||
         gradientColors != oldDelegate.gradientColors ||
         backdropColor != oldDelegate.backdropColor ||
