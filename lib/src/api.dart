@@ -81,4 +81,3 @@ Future<NextgenShowcaseController> showSpotlight(
     controller: controller,
   );
 }
-

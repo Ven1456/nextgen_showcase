@@ -207,41 +207,41 @@ extension ShowcaseExtensions on GlobalKey {
 class ShowcasePresets {
   /// A modern configuration with glass morphism effects.
   static ShowcaseConfig modern() => ShowcaseConfig(
-    stunMode: true,
-    cardTransition: CardTransition.elasticIn,
-    cardTransitionDurationMs: 400,
-    gradientColors: const [
-      Color(0xFF667eea),
-      Color(0xFF764ba2),
-      Color(0xFFf093fb),
-      Color(0xFFf5576c),
-    ],
-    glassBlurSigma: 15,
-    cardOpacity: 0.9,
-  );
+        stunMode: true,
+        cardTransition: CardTransition.elasticIn,
+        cardTransitionDurationMs: 400,
+        gradientColors: const [
+          Color(0xFF667eea),
+          Color(0xFF764ba2),
+          Color(0xFFf093fb),
+          Color(0xFFf5576c),
+        ],
+        glassBlurSigma: 15,
+        cardOpacity: 0.9,
+      );
 
   /// A minimal configuration with subtle effects.
   static ShowcaseConfig minimal() => ShowcaseConfig(
-    backdropColor: const Color(0xCC000000),
-    cardTransition: CardTransition.fade,
-    cardTransitionDurationMs: 200,
-    spotlightShadowBlur: 16,
-  );
+        backdropColor: const Color(0xCC000000),
+        cardTransition: CardTransition.fade,
+        cardTransitionDurationMs: 200,
+        spotlightShadowBlur: 16,
+      );
 
   /// A playful configuration with bouncy animations.
   static ShowcaseConfig playful() => ShowcaseConfig(
-    cardTransition: CardTransition.bounceIn,
-    cardTransitionDurationMs: 600,
-    spotlightShadowBlur: 32,
-    glowPulseDelta: 15,
-  );
+        cardTransition: CardTransition.bounceIn,
+        cardTransitionDurationMs: 600,
+        spotlightShadowBlur: 32,
+        glowPulseDelta: 15,
+      );
 
   /// A professional configuration for business apps.
   static ShowcaseConfig professional() => ShowcaseConfig(
-    backdropColor: const Color(0xE6000000),
-    cardColor: Colors.white,
-    cardTransition: CardTransition.slideUp,
-    cardTransitionDurationMs: 300,
-    spotlightShadowBlur: 20,
-  );
+        backdropColor: const Color(0xE6000000),
+        cardColor: Colors.white,
+        cardTransition: CardTransition.slideUp,
+        cardTransitionDurationMs: 300,
+        spotlightShadowBlur: 20,
+      );
 }

@@ -20,13 +20,15 @@ class _EdgeCasesPageState extends State<EdgeCasesPage> {
       ShowcaseStep(
         key: _unmountedKey,
         title: 'Missing/moved target',
-        description: 'The controller safely does nothing if the key is not found.',
+        description:
+            'The controller safely does nothing if the key is not found.',
       ),
     ]);
     _controller.startManaged(context);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No crash: missing key handled gracefully')),
+        const SnackBar(
+            content: Text('No crash: missing key handled gracefully')),
       );
     }
   }
@@ -42,7 +44,8 @@ class _EdgeCasesPageState extends State<EdgeCasesPage> {
       ShowcaseStep(
         key: _farKey,
         title: 'Offscreen target',
-        description: 'This button was scrolled into view before starting the tour.',
+        description:
+            'This button was scrolled into view before starting the tour.',
       ),
     ]);
     _controller.startManaged(context);
@@ -95,5 +98,3 @@ class _EdgeCasesPageState extends State<EdgeCasesPage> {
     );
   }
 }
-
-

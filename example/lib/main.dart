@@ -52,7 +52,8 @@ class _ShowcaseExampleAppState extends State<ShowcaseExampleApp> {
               _updateTheme(_themeData.copyWith(stunMode: true)),
           onDisableStunMode: () =>
               _updateTheme(_themeData.copyWith(stunMode: false)),
-        ),      ),
+        ),
+      ),
     );
   }
 }
@@ -95,7 +96,8 @@ class _ShowcaseHomeState extends State<ShowcaseHome> {
         isDark: widget.themeMode == ThemeMode.dark,
         onToggleDark: widget.onToggleThemeMode,
         stunEnabled: widget.themeData.stunMode,
-        onToggleStun: (bool v) => v ? widget.onEnableStunMode() : widget.onDisableStunMode(),
+        onToggleStun: (bool v) =>
+            v ? widget.onEnableStunMode() : widget.onDisableStunMode(),
       ),
       const EdgeCasesPage(),
     ];
@@ -113,11 +115,26 @@ class _ShowcaseHomeState extends State<ShowcaseHome> {
           setState(() => _index = i);
         },
         destinations: const <NavigationDestination>[
-          NavigationDestination(icon: Icon(Icons.play_arrow_outlined), selectedIcon: Icon(Icons.play_arrow), label: 'Basic'),
-          NavigationDestination(icon: Icon(Icons.star_border), selectedIcon: Icon(Icons.star), label: 'Advanced'),
-          NavigationDestination(icon: Icon(Icons.tune), selectedIcon: Icon(Icons.tune), label: 'Playground'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
-          NavigationDestination(icon: Icon(Icons.report_gmailerrorred_outlined), selectedIcon: Icon(Icons.report), label: 'Edge cases'),
+          NavigationDestination(
+              icon: Icon(Icons.play_arrow_outlined),
+              selectedIcon: Icon(Icons.play_arrow),
+              label: 'Basic'),
+          NavigationDestination(
+              icon: Icon(Icons.star_border),
+              selectedIcon: Icon(Icons.star),
+              label: 'Advanced'),
+          NavigationDestination(
+              icon: Icon(Icons.tune),
+              selectedIcon: Icon(Icons.tune),
+              label: 'Playground'),
+          NavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings),
+              label: 'Settings'),
+          NavigationDestination(
+              icon: Icon(Icons.report_gmailerrorred_outlined),
+              selectedIcon: Icon(Icons.report),
+              label: 'Edge cases'),
         ],
       ),
     );
