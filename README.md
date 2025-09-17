@@ -1,27 +1,33 @@
-## nextgen_showcase
+# nextgen_showcase
 
-A modern, lightweight Flutter package to create guided product tours and spotlight walkthroughs in minutes. Now with enhanced animations, improved visual effects, and a simplified API!
+A modern, lightweight Flutter package to create guided product tours and spotlight walkthroughs in minutes.  
+Now with enhanced animations, improved visual effects, and a simplified API!
 
 [![Pub Version](https://img.shields.io/pub/v/nextgen_showcase.svg)](https://pub.dev/packages/nextgen_showcase)
 [![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=main)](https://github.com/your-org/nextgen_showcase/actions)
 [![codecov](https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg)](https://app.codecov.io/gh/your-org/nextgen_showcase)
 
-### Features
-- ✅ **Enhanced Visual Effects** - Beautiful gradient backgrounds and glass morphism
-- ✅ **Smooth Animations** - Improved transitions with multiple animation types
-- ✅ **Multiple Spotlight Shapes** - Rectangle, circle, oval, stadium, diamond, and custom shapes
-- ✅ **Simplified API** - Fluent `ShowcaseFlowBuilder` with preset configurations
-- ✅ **Material 3 Design** - Modern card design with customizable content
-- ✅ **Cross-Platform** - Works on mobile, web, and desktop
-- ✅ **Accessibility** - Screen reader support and keyboard navigation
-- ✅ **Flexible Theming** - Comprehensive theming system with presets
+---
 
-### Installation
+## ✨ Features
+- ✅ **Enhanced Visual Effects** – Gradient backgrounds & glass morphism
+- ✅ **Smooth Animations** – Multiple transition types
+- ✅ **Multiple Spotlight Shapes** – Rectangle, circle, oval, stadium, diamond, custom
+- ✅ **Simplified API** – Fluent `ShowcaseFlowBuilder` with presets
+- ✅ **Material 3 Design** – Modern info card styles
+- ✅ **Cross-Platform** – Works on mobile, web, and desktop
+- ✅ **Accessibility** – Screen reader & keyboard navigation
+- ✅ **Flexible Theming** – Presets & custom theme builder
+
+---
+
+## 🚀 Installation
+
 Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nextgen_showcase: ^0.1.7
+  nextgen_showcase: ^0.1.8
 ```
 
 Then run:
@@ -30,7 +36,7 @@ Then run:
 flutter pub get
 ```
 
-### Quick start
+### ⚡ Quick Start
 
 #### Simple API (Recommended)
 ```dart
@@ -128,7 +134,7 @@ class _DemoPageState extends State<DemoPage> {
 
 ### Advanced Features
 
-#### Preset Configurations
+#### 🎨 Preset Configurations
 ```dart
 // Modern glass morphism effect
 ShowcasePresets.modern()
@@ -143,7 +149,7 @@ ShowcasePresets.playful()
 ShowcasePresets.professional()
 ```
 
-#### Custom Animations
+#### 🎬 Transitions
 ```dart
 ShowcaseFlowBuilder.create()
   .addStep(key: _key, title: 'Title', description: 'Description')
@@ -159,7 +165,7 @@ ShowcaseFlowBuilder.create()
 - `CardTransition.slideFromRight` - Slide from right side
 - `CardTransition.bounceIn` - Bouncy scale animation
 
-#### Custom Theming
+#### 🎨 Custom Theming
 ```dart
 NextgenShowcaseTheme(
   data: const NextgenShowcaseThemeData(
@@ -191,8 +197,10 @@ final circularStep = _fabKey.toCircularShowcaseStep(
   description: 'This is a floating action button',
 );
 ```
+▶️ [Download Demo Video](https://github.com/<username>/<repo>/releases/download/v1.0.0/demo.mp4)
 
-### What's New in v0.1.6
+
+### What's New in v0.1.8
 
 - 🎨 **Enhanced Visual Effects** - Beautiful gradient backgrounds with improved color schemes
 - ⚡ **Smooth Animations** - New transition types and improved timing curves
@@ -209,14 +217,14 @@ See `example/` for a comprehensive demo featuring:
 - Custom content builders
 - Shape rendering demonstrations
 
-### Roadmap
+### 📌 Roadmap
 - [ ] Auto-positioning of info card (above/below target)
 - [ ] Async step actions (e.g., open links)
 - [ ] Gesture-based navigation (swipe to next/previous)
 - [ ] Progress indicators for multi-step tours
 
-### Contributing
+### 🤝 Contributing
 Contributions are welcome! Please open an issue or PR.
 
-### License
+### 📄 License
 MIT

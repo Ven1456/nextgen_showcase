@@ -16,12 +16,13 @@ class ShowcaseManager {
   bool get hasActiveShowcase => _activeController != null;
 
   /// Starts a new showcase, dismissing any existing one first.
-  void startShowcase(NextgenShowcaseController controller, BuildContext context) {
+  void startShowcase(
+      NextgenShowcaseController controller, BuildContext context) {
     // Dismiss any existing showcase
     if (_activeController != null && _activeController!.isShowing) {
       _activeController!.dismiss();
     }
-    
+
     _activeController = controller;
     controller.start(context);
   }

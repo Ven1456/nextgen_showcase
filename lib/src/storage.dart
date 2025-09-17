@@ -51,5 +51,3 @@ class SharedPrefsShowcaseStorage implements ShowcaseStorage {
     }
   }
 }
-
-

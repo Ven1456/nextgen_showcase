@@ -58,7 +58,8 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
                   CircleAvatar(radius: 20, backgroundColor: Colors.blue),
                   SizedBox(width: 12),
                   Text('Profile Management',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -68,9 +69,12 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
               Row(
                 children: <Widget>[
                   FilledButton.tonal(
-                      onPressed: ()=> ShowcaseManager().dismissActive(), child: const Text('Edit Profile')),
+                      onPressed: () => ShowcaseManager().dismissActive(),
+                      child: const Text('Edit Profile')),
                   const SizedBox(width: 8),
-                  FilledButton(onPressed: ()=> ShowcaseManager().dismissActive(), child: const Text('View Orders')),
+                  FilledButton(
+                      onPressed: () => ShowcaseManager().dismissActive(),
+                      child: const Text('View Orders')),
                 ],
               )
             ],
@@ -100,8 +104,7 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
       ShowcaseStep(
         key: _firstProductKey,
         title: 'Featured Product',
-        description:
-            'Tap to view details, compare, and add to your cart.',
+        description: 'Tap to view details, compare, and add to your cart.',
       ),
       ShowcaseStep(
         key: _fabKey,
@@ -236,8 +239,8 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           key: index == 0 ? _categoriesKey : null,
-                          child: Icon(icons[index],
-                              color: Colors.blue, size: 30),
+                          child:
+                              Icon(icons[index], color: Colors.blue, size: 30),
                         ),
                         const SizedBox(height: 8),
                         Text(categories[index],
@@ -264,10 +267,18 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
               ),
               itemCount: 4,
               itemBuilder: (BuildContext context, int index) {
-                final List<String> products =
-                    <String>['iPhone 15', 'MacBook Pro', 'AirPods', 'iPad Air'];
-                final List<String> prices =
-                    <String>['\$999', '\$1999', '\$199', '\$599'];
+                final List<String> products = <String>[
+                  'iPhone 15',
+                  'MacBook Pro',
+                  'AirPods',
+                  'iPad Air'
+                ];
+                final List<String> prices = <String>[
+                  '\$999',
+                  '\$1999',
+                  '\$199',
+                  '\$599'
+                ];
                 return Card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,5 +333,3 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
     );
   }
 }
-
-

@@ -857,6 +857,7 @@ class _EvenOddClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant _EvenOddClipper oldClipper) =>
       !_arePathsEqual(cutout, oldClipper.cutout);
 }
+
 bool _arePathsEqual(Path a, Path b) {
   final ui.PathMetrics am = a.computeMetrics();
   final ui.PathMetrics bm = b.computeMetrics();

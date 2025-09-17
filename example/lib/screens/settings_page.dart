@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key, required this.isDark, required this.onToggleDark, required this.stunEnabled, required this.onToggleStun});
+  const SettingsPage(
+      {super.key,
+      required this.isDark,
+      required this.onToggleDark,
+      required this.stunEnabled,
+      required this.onToggleStun});
 
   final bool isDark;
   final void Function(bool) onToggleDark;
@@ -24,11 +29,10 @@ class SettingsPage extends StatelessWidget {
         ),
         const ListTile(
           title: Text('About'),
-          subtitle: Text('This example showcases multiple use cases and a live playground.'),
+          subtitle: Text(
+              'This example showcases multiple use cases and a live playground.'),
         ),
       ],
     );
   }
 }
-
-

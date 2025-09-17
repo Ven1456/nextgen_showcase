@@ -103,5 +103,3 @@ class SpotlightPainter extends CustomPainter {
         stunMode != oldDelegate.stunMode;
   }
 }
-
-

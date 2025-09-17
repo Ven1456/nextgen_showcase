@@ -25,52 +25,57 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
             onPressed: () {
               ShowcaseManager().dismissActive();
               ShowcaseFlowBuilder.create()
-                .addStep(
-                  key: _buttonKey,
-                  title: 'Welcome!',
-                  description: 'This is a simple showcase demo. Tap the button below to see more features.',
-                )
-                .addCircularStep(
-                  key: _fabKey,
-                  title: 'Floating Action Button',
-                  description: 'This FAB demonstrates circular spotlight shapes.',
-                )
-                .addRectangularStep(
-                  key: _cardKey,
-                  title: 'Info Card',
-                  description: 'This card shows how rectangular spotlights work with custom content.',
-                  contentBuilder: (context) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-                      Row(
-                        children: const <Widget>[
-                          Icon(Icons.info, color: Colors.blue),
-                          SizedBox(width: 8),
-                          Text('Custom Content', style: TextStyle(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text('You can create custom content for showcase cards!'),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: <Widget>[
-                          FilledButton.tonal(
-                            onPressed: () {},
-                            child: const Text('Learn More'),
-                          ),
-                          const SizedBox(width: 8),
-                          FilledButton(
-                            onPressed: () {},
-                            child: const Text('Get Started'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-                .withConfig(ShowcasePresets.modern())
-                .start(context);
+                  .addStep(
+                    key: _buttonKey,
+                    title: 'Welcome!',
+                    description:
+                        'This is a simple showcase demo. Tap the button below to see more features.',
+                  )
+                  .addCircularStep(
+                    key: _fabKey,
+                    title: 'Floating Action Button',
+                    description:
+                        'This FAB demonstrates circular spotlight shapes.',
+                  )
+                  .addRectangularStep(
+                    key: _cardKey,
+                    title: 'Info Card',
+                    description:
+                        'This card shows how rectangular spotlights work with custom content.',
+                    contentBuilder: (context) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Row(
+                          children: const <Widget>[
+                            Icon(Icons.info, color: Colors.blue),
+                            SizedBox(width: 8),
+                            Text('Custom Content',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                            'You can create custom content for showcase cards!'),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: <Widget>[
+                            FilledButton.tonal(
+                              onPressed: () {},
+                              child: const Text('Learn More'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilledButton(
+                              onPressed: () {},
+                              child: const Text('Get Started'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                  .withConfig(ShowcasePresets.modern())
+                  .start(context);
             },
           ),
         ],
@@ -96,11 +101,13 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                       children: const <Widget>[
                         Icon(Icons.star, color: Colors.amber),
                         SizedBox(width: 8),
-                        Text('Enhanced Animations', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Enhanced Animations',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text('Smooth transitions with improved timing and curves.'),
+                    const Text(
+                        'Smooth transitions with improved timing and curves.'),
                   ],
                 ),
               ),
@@ -110,25 +117,25 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
               children: <Widget>[
                 Expanded(
                   child: ElevatedButton(
-            key: _buttonKey,
-            onPressed: () {},
+                    key: _buttonKey,
+                    onPressed: () {},
                     child: const Text('Try Feature'),
                   ),
-          ),
+                ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: OutlinedButton(
-            onPressed: () {
+                    onPressed: () {
                       ShowcaseManager().dismissActive();
                       ShowcaseFlowBuilder.create()
-                        .addStep(
-                  key: _buttonKey,
-                          title: 'Preset Demo',
-                          description: 'This uses the playful preset configuration.',
-
-                        )
-                        .withConfig(ShowcasePresets.playful())
-                        .start(context);
+                          .addStep(
+                            key: _buttonKey,
+                            title: 'Preset Demo',
+                            description:
+                                'This uses the playful preset configuration.',
+                          )
+                          .withConfig(ShowcasePresets.playful())
+                          .start(context);
                     },
                     child: const Text('Playful Mode'),
                   ),
@@ -139,7 +146,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
             const Text(
               'New Features:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-             ),
+            ),
             const SizedBox(height: 8),
             const Text('• Improved background colors and gradients'),
             const Text('• Enhanced animations with better timing'),
@@ -158,7 +165,8 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
           controller.setSteps([
             _fabKey.toCircularShowcaseStep(
               title: 'Quick Action',
-              description: 'This demonstrates the extension method for creating showcase steps.',
+              description:
+                  'This demonstrates the extension method for creating showcase steps.',
             ),
           ]);
           controller.startManaged(context);
@@ -168,5 +176,3 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
     );
   }
 }
-
-

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nextgen_showcase/nextgen_showcase.dart';
 
 class PlaygroundPage extends StatefulWidget {
-  const PlaygroundPage({super.key, required this.data, required this.onChanged});
+  const PlaygroundPage(
+      {super.key, required this.data, required this.onChanged});
 
   final NextgenShowcaseThemeData data;
   final void Function(NextgenShowcaseThemeData) onChanged;
@@ -90,23 +91,30 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
             runSpacing: 16,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: <Widget>[
-              
-                DropdownButton<CardTransition>(
-                  value: _transition,
-                  onChanged: (CardTransition? v) {
-                    setState(() => _transition = v ?? _transition);
-                    _updateShowcase();
-                    if (ShowcaseManager().hasActiveShowcase) _startDemo();
-                  },
-                  items: const <DropdownMenuItem<CardTransition>>[
-                    DropdownMenuItem(value: CardTransition.fade, child: Text('Fade')),
-                    DropdownMenuItem(value: CardTransition.zoom, child: Text('Zoom')),
-                    DropdownMenuItem(value: CardTransition.slideUp, child: Text('Slide Up')),
-                    DropdownMenuItem(value: CardTransition.elasticIn, child: Text('Elastic In')),
-                    DropdownMenuItem(value: CardTransition.slideFromRight, child: Text('Slide From Right')),
-                    DropdownMenuItem(value: CardTransition.bounceIn, child: Text('Bounce In')),
-                  ],
-                ),
+              DropdownButton<CardTransition>(
+                value: _transition,
+                onChanged: (CardTransition? v) {
+                  setState(() => _transition = v ?? _transition);
+                  _updateShowcase();
+                  if (ShowcaseManager().hasActiveShowcase) _startDemo();
+                },
+                items: const <DropdownMenuItem<CardTransition>>[
+                  DropdownMenuItem(
+                      value: CardTransition.fade, child: Text('Fade')),
+                  DropdownMenuItem(
+                      value: CardTransition.zoom, child: Text('Zoom')),
+                  DropdownMenuItem(
+                      value: CardTransition.slideUp, child: Text('Slide Up')),
+                  DropdownMenuItem(
+                      value: CardTransition.elasticIn,
+                      child: Text('Elastic In')),
+                  DropdownMenuItem(
+                      value: CardTransition.slideFromRight,
+                      child: Text('Slide From Right')),
+                  DropdownMenuItem(
+                      value: CardTransition.bounceIn, child: Text('Bounce In')),
+                ],
+              ),
               SizedBox(
                 width: 220,
                 child: Column(
@@ -121,11 +129,21 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                         _applyTheme();
                       },
                       items: const <DropdownMenuItem<Color>>[
-                        DropdownMenuItem(value: Color.fromARGB(170, 0, 0, 0), child: Text('Black (semi)')),
-                        DropdownMenuItem(value: Color.fromARGB(170, 0, 0, 255), child: Text('Blue (semi)')),
-                        DropdownMenuItem(value: Color.fromARGB(170, 0, 255, 0), child: Text('Green (semi)')),
-                        DropdownMenuItem(value: Color.fromARGB(170, 255, 0, 0), child: Text('Red (semi)')),
-                        DropdownMenuItem(value: Color.fromARGB(170, 255, 255, 255), child: Text('White (semi)')),
+                        DropdownMenuItem(
+                            value: Color.fromARGB(170, 0, 0, 0),
+                            child: Text('Black (semi)')),
+                        DropdownMenuItem(
+                            value: Color.fromARGB(170, 0, 0, 255),
+                            child: Text('Blue (semi)')),
+                        DropdownMenuItem(
+                            value: Color.fromARGB(170, 0, 255, 0),
+                            child: Text('Green (semi)')),
+                        DropdownMenuItem(
+                            value: Color.fromARGB(170, 255, 0, 0),
+                            child: Text('Red (semi)')),
+                        DropdownMenuItem(
+                            value: Color.fromARGB(170, 255, 255, 255),
+                            child: Text('White (semi)')),
                       ],
                     ),
                   ],
@@ -151,7 +169,6 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                   ],
                 ),
               ),
-              
             ],
           ),
           const SizedBox(height: 24),
@@ -167,5 +184,3 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     );
   }
 }
-
-

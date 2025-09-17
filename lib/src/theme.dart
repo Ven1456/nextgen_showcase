@@ -146,7 +146,7 @@ class NextgenShowcaseThemeData {
     final ThemeData material = Theme.of(context);
     final bool isDark = material.brightness == Brightness.dark;
     final Color resolvedCard = cardColor ?? material.colorScheme.surface;
-    
+
     // Enhanced gradient colors for better visual appeal
     final List<Color> resolvedGradient = gradientColors.isNotEmpty
         ? gradientColors
@@ -163,7 +163,7 @@ class NextgenShowcaseThemeData {
                 const Color(0xFFf093fb),
                 const Color(0xFFf5576c)
               ]);
-    
+
     return copyWith(
       cardColor: resolvedCard,
       gradientColors: resolvedGradient,
