@@ -27,7 +27,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nextgen_showcase: ^0.1.8
+  nextgen_showcase: ^0.1.9
 ```
 
 Then run:
@@ -200,7 +200,7 @@ final circularStep = _fabKey.toCircularShowcaseStep(
 ▶️ [Download Demo Video] (https://github.com/Ven1456/nextgen_showcase/blob/1.0.0-improvements/video-reference.mp4)
 
 
-### What's New in v0.1.8
+### What's New in v0.1.9
 
 - 🎨 **Enhanced Visual Effects** - Beautiful gradient backgrounds with improved color schemes
 - ⚡ **Smooth Animations** - New transition types and improved timing curves

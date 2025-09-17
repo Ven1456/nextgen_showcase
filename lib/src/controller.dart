@@ -784,7 +784,7 @@ class _BackdropLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final NextgenShowcaseThemeData t = NextgenShowcaseTheme.of(context);
-    if ((t.backdropBlurSigma <= 0) && (t.backdropColor.alpha == 0)) {
+    if ((t.backdropBlurSigma <= 0) && (((t.backdropColor.a * 255).round() & 0xff) == 0)) {
       return const SizedBox.shrink();
     }
 
