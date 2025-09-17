@@ -1,3 +1,6 @@
+## 0.1.8
+- Video Reference Added
+
 ## 0.1.7
 - Added backdrop blur support
 - Corrected overlay layering
