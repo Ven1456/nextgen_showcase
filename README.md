@@ -4,8 +4,7 @@ A modern, lightweight Flutter package to create guided product tours and spotlig
 Now with enhanced animations, improved visual effects, and a simplified API!
 
 [![Pub Version](https://img.shields.io/pub/v/nextgen_showcase.svg)](https://pub.dev/packages/nextgen_showcase)
-[![CI](https://img.shields.io/github/actions/workflow/status/your-org/nextgen_showcase/ci.yml?branch=main)](https://github.com/your-org/nextgen_showcase/actions)
-[![codecov](https://codecov.io/gh/your-org/nextgen_showcase/branch/main/graph/badge.svg)](https://app.codecov.io/gh/your-org/nextgen_showcase)
+[![Repo]](https://github.com/Ven1456/nextgen_showcase)
 
 ---
 
