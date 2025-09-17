@@ -1,3 +1,6 @@
+## 0.1.9
+- Fix the Deprecated method issue.d
+
 ## 0.1.8
 - Video Reference Added
 
