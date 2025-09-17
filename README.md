@@ -197,7 +197,7 @@ final circularStep = _fabKey.toCircularShowcaseStep(
   description: 'This is a floating action button',
 );
 ```
-▶️ [Download Demo Video](https://github.com/<username>/<repo>/releases/download/v1.0.0/demo.mp4)
+▶️ [Download Demo Video] (https://github.com/Ven1456/nextgen_showcase/blob/1.0.0-improvements/video-reference.mp4)
 
 
 ### What's New in v0.1.8
