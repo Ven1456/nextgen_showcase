@@ -40,8 +40,104 @@ enum ShowcaseShape {
   /// Diamond-shaped spotlight.
   diamond,
 
+  /// Polygon-shaped spotlight with configurable sides.
+  polygon,
+
+  /// Star-shaped spotlight with configurable points.
+  star,
+
   /// Custom shape defined by a path.
   custom
+}
+
+/// Animation types for highlight shapes.
+enum HighlightAnimation {
+  /// No animation.
+  none,
+
+  /// Scale in/out animation.
+  scale,
+
+  /// Pulsing animation.
+  pulse,
+
+  /// Glowing animation.
+  glow,
+
+  /// Bounce animation.
+  bounce,
+
+  /// Elastic animation.
+  elastic,
+
+  /// Custom animation.
+  custom
+}
+
+/// Tooltip placement options.
+enum TooltipPlacement {
+  /// Automatically choose the best position.
+  auto,
+
+  /// Place above the target.
+  top,
+
+  /// Place below the target.
+  bottom,
+
+  /// Place to the left of the target.
+  left,
+
+  /// Place to the right of the target.
+  right,
+
+  /// Place at the top-left.
+  topLeft,
+
+  /// Place at the top-right.
+  topRight,
+
+  /// Place at the bottom-left.
+  bottomLeft,
+
+  /// Place at the bottom-right.
+  bottomRight
+}
+
+/// Background types for the showcase overlay.
+enum BackgroundType {
+  /// Solid color background.
+  solid,
+
+  /// Gradient background.
+  gradient,
+
+  /// Blur effect background.
+  blur,
+
+  /// Dimming with transparency.
+  dim,
+
+  /// Glass morphism effect.
+  glass,
+
+  /// Custom background.
+  custom
+}
+
+/// Interaction modes for the showcase.
+enum InteractionMode {
+  /// Allow interaction with highlighted widget.
+  allowHighlight,
+
+  /// Block interaction with highlighted widget.
+  blockHighlight,
+
+  /// Allow interaction outside showcase area.
+  allowOutside,
+
+  /// Block interaction outside showcase area.
+  blockOutside
 }
 
 /// Decorator allows wrapping the overlay stack to inject custom effects/widgets.
@@ -98,6 +194,34 @@ class ShowcaseStep {
     this.customCutoutPath,
     this.customCutoutBuilder,
     this.testId,
+    // New advanced features
+    this.highlightAnimation = HighlightAnimation.scale,
+    this.animationDuration = const Duration(milliseconds: 300),
+    this.tooltipPlacement = TooltipPlacement.auto,
+    this.tooltipShape = TooltipShape.roundedRectangle,
+    this.tooltipArrow = true,
+    this.richContent,
+    this.icon,
+    this.image,
+    this.heroAnimation = false,
+    this.interactionMode = InteractionMode.blockHighlight,
+    this.allowTapHighlight = false,
+    this.allowTapOutside = false,
+    this.gestureSupport = true,
+    this.autoAdvance = false,
+    this.autoAdvanceDelay = const Duration(seconds: 3),
+    this.progressIndicator = false,
+    this.persistent = false,
+    this.polygonSides = 6,
+    this.starPoints = 5,
+    this.starInnerRadius = 0.4,
+    this.customAnimation,
+    this.onStart,
+    this.onNext,
+    this.onSkip,
+    this.onFinish,
+    this.onTapHighlight,
+    this.onTapOutside,
   });
 
   /// The global key attached to the target widget.
@@ -138,4 +262,89 @@ class ShowcaseStep {
 
   /// Optional test identifier to facilitate widget tests and semantics keys.
   final String? testId;
+
+  // Advanced Features
+
+  /// Animation type for the highlight effect.
+  final HighlightAnimation highlightAnimation;
+
+  /// Duration of the highlight animation.
+  final Duration animationDuration;
+
+  /// Placement of the tooltip relative to the target.
+  final TooltipPlacement tooltipPlacement;
+
+  /// Shape of the tooltip.
+  final TooltipShape tooltipShape;
+
+  /// Whether to show an arrow pointing to the target.
+  final bool tooltipArrow;
+
+  /// Rich content for the tooltip (supports HTML-like formatting).
+  final String? richContent;
+
+  /// Optional icon to display in the tooltip.
+  final IconData? icon;
+
+  /// Optional image to display in the tooltip.
+  final String? image;
+
+  /// Whether to use hero animation for the tooltip.
+  final bool heroAnimation;
+
+  /// Interaction mode for this step.
+  final InteractionMode interactionMode;
+
+  /// Whether to allow tapping on the highlighted widget.
+  final bool allowTapHighlight;
+
+  /// Whether to allow tapping outside the showcase area.
+  final bool allowTapOutside;
+
+  /// Whether to support gesture navigation (swipe, etc.).
+  final bool gestureSupport;
+
+  /// Whether to automatically advance to the next step.
+  final bool autoAdvance;
+
+  /// Delay before auto-advancing to the next step.
+  final Duration autoAdvanceDelay;
+
+  /// Whether to show a progress indicator.
+  final bool progressIndicator;
+
+  /// Whether the tooltip should persist until manually dismissed.
+  final bool persistent;
+
+  /// Number of sides for polygon shape.
+  final int polygonSides;
+
+  /// Number of points for star shape.
+  final int starPoints;
+
+  /// Inner radius ratio for star shape (0.0 to 1.0).
+  final double starInnerRadius;
+
+  /// Custom animation for the highlight effect.
+  final Animation<double>? customAnimation;
+
+  // Event callbacks
+  final VoidCallback? onStart;
+  final VoidCallback? onNext;
+  final VoidCallback? onSkip;
+  final VoidCallback? onFinish;
+  final VoidCallback? onTapHighlight;
+  final VoidCallback? onTapOutside;
+}
+
+/// Tooltip shape options.
+enum TooltipShape {
+  /// Rounded rectangle tooltip.
+  roundedRectangle,
+
+  /// Bubble tooltip with arrow.
+  bubble,
+
+  /// Completely custom tooltip shape.
+  custom
 }

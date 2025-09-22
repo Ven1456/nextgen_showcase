@@ -5,6 +5,7 @@ import 'screens/advanced_example_page.dart';
 import 'screens/playground_page.dart';
 import 'screens/settings_page.dart';
 import 'screens/edge_cases_page.dart';
+import 'advanced_showcase_example.dart';
 
 void main() {
   runApp(const ShowcaseExampleApp());
@@ -88,6 +89,7 @@ class _ShowcaseHomeState extends State<ShowcaseHome> {
     final List<Widget> pages = <Widget>[
       const BasicExamplePage(),
       const AdvancedExamplePage(),
+      const AdvancedShowcaseExample(),
       PlaygroundPage(
         data: widget.themeData,
         onChanged: widget.onUpdateTheme,
@@ -123,6 +125,10 @@ class _ShowcaseHomeState extends State<ShowcaseHome> {
               icon: Icon(Icons.star_border),
               selectedIcon: Icon(Icons.star),
               label: 'Advanced'),
+          NavigationDestination(
+              icon: Icon(Icons.auto_awesome),
+              selectedIcon: Icon(Icons.auto_awesome),
+              label: 'All Features'),
           NavigationDestination(
               icon: Icon(Icons.tune),
               selectedIcon: Icon(Icons.tune),

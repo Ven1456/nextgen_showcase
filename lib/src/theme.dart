@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nextgen_showcase/src/models.dart';
 
 /// An inherited widget that provides theme data for showcase widgets.
 ///
@@ -63,6 +64,37 @@ class NextgenShowcaseThemeData {
     this.glassBlurSigma = 12,
     this.cardOpacity = 0.85,
     this.glowPulseDelta = 10,
+    // New advanced theme options
+    this.backgroundType = BackgroundType.solid,
+    this.gradientStops,
+    this.gradientBegin = Alignment.topLeft,
+    this.gradientEnd = Alignment.bottomRight,
+    this.dimOpacity = 0.7,
+    this.holePunchTransparency = true,
+    this.animationCurve = Curves.easeInOut,
+    this.animationDuration = const Duration(milliseconds: 300),
+    this.tooltipBackgroundColor,
+    this.tooltipBorderColor,
+    this.tooltipBorderWidth = 1.0,
+    this.tooltipBorderRadius = const BorderRadius.all(Radius.circular(8)),
+    this.tooltipShadowColor = const Color(0x40000000),
+    this.tooltipShadowBlur = 8.0,
+    this.tooltipShadowOffset = const Offset(0, 2),
+    this.tooltipPadding = const EdgeInsets.all(16),
+    this.tooltipMargin = const EdgeInsets.all(8),
+    this.arrowSize = 8.0,
+    this.arrowColor,
+    this.progressIndicatorColor,
+    this.progressIndicatorBackgroundColor,
+    this.progressIndicatorHeight = 4.0,
+    this.buttonStyle,
+    this.skipButtonStyle,
+    this.nextButtonStyle,
+    this.previousButtonStyle,
+    this.closeButtonStyle,
+    this.rtlSupport = false,
+    this.accessibilityAnnouncements = true,
+    this.keyboardNavigation = true,
   });
 
   /// The color of the backdrop overlay.
@@ -106,6 +138,98 @@ class NextgenShowcaseThemeData {
   /// Delta value for the glow pulse animation.
   final double glowPulseDelta;
 
+  // New advanced theme properties
+
+  /// Type of background for the showcase overlay.
+  final BackgroundType backgroundType;
+
+  /// Gradient stops for gradient backgrounds.
+  final List<double>? gradientStops;
+
+  /// Begin alignment for gradient backgrounds.
+  final Alignment gradientBegin;
+
+  /// End alignment for gradient backgrounds.
+  final Alignment gradientEnd;
+
+  /// Opacity for dimming backgrounds.
+  final double dimOpacity;
+
+  /// Whether the highlight cutout should be transparent (hole punch effect).
+  final bool holePunchTransparency;
+
+  /// Animation curve for transitions.
+  final Curve animationCurve;
+
+  /// Default animation duration.
+  final Duration animationDuration;
+
+  /// Background color for tooltips.
+  final Color? tooltipBackgroundColor;
+
+  /// Border color for tooltips.
+  final Color? tooltipBorderColor;
+
+  /// Border width for tooltips.
+  final double tooltipBorderWidth;
+
+  /// Border radius for tooltips.
+  final BorderRadius tooltipBorderRadius;
+
+  /// Shadow color for tooltips.
+  final Color tooltipShadowColor;
+
+  /// Shadow blur radius for tooltips.
+  final double tooltipShadowBlur;
+
+  /// Shadow offset for tooltips.
+  final Offset tooltipShadowOffset;
+
+  /// Padding inside tooltips.
+  final EdgeInsets tooltipPadding;
+
+  /// Margin around tooltips.
+  final EdgeInsets tooltipMargin;
+
+  /// Size of the arrow pointing to the target.
+  final double arrowSize;
+
+  /// Color of the arrow pointing to the target.
+  final Color? arrowColor;
+
+  /// Color of the progress indicator.
+  final Color? progressIndicatorColor;
+
+  /// Background color of the progress indicator.
+  final Color? progressIndicatorBackgroundColor;
+
+  /// Height of the progress indicator.
+  final double progressIndicatorHeight;
+
+  /// Style for action buttons.
+  final ButtonStyle? buttonStyle;
+
+  /// Style for skip button.
+  final ButtonStyle? skipButtonStyle;
+
+  /// Style for next button.
+  final ButtonStyle? nextButtonStyle;
+
+  /// Style for previous button.
+  final ButtonStyle? previousButtonStyle;
+
+  /// Style for close button.
+  final ButtonStyle? closeButtonStyle;
+
+  /// Whether to support right-to-left layouts.
+  final bool rtlSupport;
+
+  /// Whether to enable accessibility announcements.
+  final bool accessibilityAnnouncements;
+
+  /// Whether to enable keyboard navigation.
+  final bool keyboardNavigation;
+
   /// Creates a copy of this theme data with the given fields replaced.
   ///
   /// All parameters are optional and will use the current values if not provided.
@@ -123,6 +247,37 @@ class NextgenShowcaseThemeData {
     double? glassBlurSigma,
     double? cardOpacity,
     double? glowPulseDelta,
+    // New advanced theme properties
+    BackgroundType? backgroundType,
+    List<double>? gradientStops,
+    Alignment? gradientBegin,
+    Alignment? gradientEnd,
+    double? dimOpacity,
+    bool? holePunchTransparency,
+    Curve? animationCurve,
+    Duration? animationDuration,
+    Color? tooltipBackgroundColor,
+    Color? tooltipBorderColor,
+    double? tooltipBorderWidth,
+    BorderRadius? tooltipBorderRadius,
+    Color? tooltipShadowColor,
+    double? tooltipShadowBlur,
+    Offset? tooltipShadowOffset,
+    EdgeInsets? tooltipPadding,
+    EdgeInsets? tooltipMargin,
+    double? arrowSize,
+    Color? arrowColor,
+    Color? progressIndicatorColor,
+    Color? progressIndicatorBackgroundColor,
+    double? progressIndicatorHeight,
+    ButtonStyle? buttonStyle,
+    ButtonStyle? skipButtonStyle,
+    ButtonStyle? nextButtonStyle,
+    ButtonStyle? previousButtonStyle,
+    ButtonStyle? closeButtonStyle,
+    bool? rtlSupport,
+    bool? accessibilityAnnouncements,
+    bool? keyboardNavigation,
   }) {
     return NextgenShowcaseThemeData(
       backdropColor: backdropColor ?? this.backdropColor,
@@ -138,6 +293,37 @@ class NextgenShowcaseThemeData {
       glassBlurSigma: glassBlurSigma ?? this.glassBlurSigma,
       cardOpacity: cardOpacity ?? this.cardOpacity,
       glowPulseDelta: glowPulseDelta ?? this.glowPulseDelta,
+      // New advanced theme properties
+      backgroundType: backgroundType ?? this.backgroundType,
+      gradientStops: gradientStops ?? this.gradientStops,
+      gradientBegin: gradientBegin ?? this.gradientBegin,
+      gradientEnd: gradientEnd ?? this.gradientEnd,
+      dimOpacity: dimOpacity ?? this.dimOpacity,
+      holePunchTransparency: holePunchTransparency ?? this.holePunchTransparency,
+      animationCurve: animationCurve ?? this.animationCurve,
+      animationDuration: animationDuration ?? this.animationDuration,
+      tooltipBackgroundColor: tooltipBackgroundColor ?? this.tooltipBackgroundColor,
+      tooltipBorderColor: tooltipBorderColor ?? this.tooltipBorderColor,
+      tooltipBorderWidth: tooltipBorderWidth ?? this.tooltipBorderWidth,
+      tooltipBorderRadius: tooltipBorderRadius ?? this.tooltipBorderRadius,
+      tooltipShadowColor: tooltipShadowColor ?? this.tooltipShadowColor,
+      tooltipShadowBlur: tooltipShadowBlur ?? this.tooltipShadowBlur,
+      tooltipShadowOffset: tooltipShadowOffset ?? this.tooltipShadowOffset,
+      tooltipPadding: tooltipPadding ?? this.tooltipPadding,
+      tooltipMargin: tooltipMargin ?? this.tooltipMargin,
+      arrowSize: arrowSize ?? this.arrowSize,
+      arrowColor: arrowColor ?? this.arrowColor,
+      progressIndicatorColor: progressIndicatorColor ?? this.progressIndicatorColor,
+      progressIndicatorBackgroundColor: progressIndicatorBackgroundColor ?? this.progressIndicatorBackgroundColor,
+      progressIndicatorHeight: progressIndicatorHeight ?? this.progressIndicatorHeight,
+      buttonStyle: buttonStyle ?? this.buttonStyle,
+      skipButtonStyle: skipButtonStyle ?? this.skipButtonStyle,
+      nextButtonStyle: nextButtonStyle ?? this.nextButtonStyle,
+      previousButtonStyle: previousButtonStyle ?? this.previousButtonStyle,
+      closeButtonStyle: closeButtonStyle ?? this.closeButtonStyle,
+      rtlSupport: rtlSupport ?? this.rtlSupport,
+      accessibilityAnnouncements: accessibilityAnnouncements ?? this.accessibilityAnnouncements,
+      keyboardNavigation: keyboardNavigation ?? this.keyboardNavigation,
     );
   }
 
