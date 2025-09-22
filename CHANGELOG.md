@@ -1,5 +1,8 @@
+## 0.1.10
+- Update Readme.md file 
+
 ## 0.1.9
-- Fix the Deprecated method issue.d
+- Fix the Deprecated method issue
 
 ## 0.1.8
 - Video Reference Added

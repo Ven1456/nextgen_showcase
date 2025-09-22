@@ -235,7 +235,7 @@ class _AdvancedExamplePageState extends State<AdvancedExamplePage> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.1),
+                            color: Colors.blue.withAlpha(10),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           key: index == 0 ? _categoriesKey : null,
